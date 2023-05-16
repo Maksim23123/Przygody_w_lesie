@@ -5,6 +5,7 @@ import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class MainMenu extends JPanel {
 
@@ -25,25 +26,25 @@ public class MainMenu extends JPanel {
 
     void loadImages(){
         try {
-            playButton = new Button(144, 72, ImageIO.read(getClass().
-                    getResourceAsStream("/gui/play_button_dont_active.png")));
-            playButton.addImage(ImageIO.read(getClass().
-                    getResourceAsStream("/gui/play_button_active.png")));
+            playButton = new Button(144, 72, ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/gui/play_button_dont_active.png"))));
+            playButton.addImage(ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/gui/play_button_active.png"))));
             playButton.setPosX(gp.screenWidth / 2 - playButton.size.width / 2);
             playButton.setPosY((int)(gp.screenHeight / 1.7) - playButton.size.height / 2);
 
 
-            settingButton = new Button(243, 72, ImageIO.read(getClass().
-                    getResourceAsStream("/gui/settings_button_dont_active.png")));
-            settingButton.addImage(ImageIO.read(getClass().
-                    getResourceAsStream("/gui/settings_button_active.png")));
+            settingButton = new Button(243, 72, ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/gui/settings_button_dont_active.png"))));
+            settingButton.addImage(ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/gui/settings_button_active.png"))));
             settingButton.setPosX(gp.screenWidth / 2 - settingButton.size.width / 2);
             settingButton.setPosY((int)(gp.screenHeight / 1.7) + settingButton.size.height);
 
-            quitButton = new Button(144, 72, ImageIO.read(getClass().
-                    getResourceAsStream("/gui/quit_button_dont_active.png")));
-            quitButton.addImage(ImageIO.read(getClass().
-                    getResourceAsStream("/gui/quit_button_active.png")));
+            quitButton = new Button(144, 72, ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/gui/quit_button_dont_active.png"))));
+            quitButton.addImage(ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/gui/quit_button_active.png"))));
             quitButton.setPosX(gp.screenWidth / 2 - quitButton.size.width / 2);
             quitButton.setPosY((int)(gp.screenHeight / 1.7) + (int)(quitButton.size.height * 2.5));
         }
@@ -56,6 +57,9 @@ public class MainMenu extends JPanel {
 
         if (checkHover(playButton)) {
             playButton.setState(1);
+            if(gp.mouseHandler.isClicked()) {
+                System.out.println("Check");
+            }
         }
         else {
             playButton.setState(0);
@@ -70,23 +74,22 @@ public class MainMenu extends JPanel {
 
         if (checkHover(quitButton)) {
             quitButton.setState(1);
+            if(gp.mouseHandler.isClicked()) {
+                System.exit(0);
+            }
         }
         else {
             quitButton.setState(0);
         }
+        gp.mouseHandler.reloadClick();
 
     }
 
     private boolean checkHover(Button button) {
         int posX = gp.mouseHandler.getMousePosX();
         int posY = gp.mouseHandler.getMousePosY();
-        if (button.posX < posX && button.posX + button.size.width > posX &&
-                button.posY < posY && button.posY + button.size.height > posY) {
-            return true;
-        }
-        else {
-            return  false;
-        }
+        return button.posX < posX && button.posX + button.size.width > posX &&
+                button.posY < posY && button.posY + button.size.height > posY;
     }
 
     public void draw(Graphics2D g2) {
