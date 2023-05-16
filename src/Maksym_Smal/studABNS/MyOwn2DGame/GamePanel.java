@@ -25,6 +25,10 @@ public class GamePanel extends JPanel implements Runnable {
     //FPS
     int FPS = 60;
 
+    public void setGameState(String gameState) {
+        this.gameState = gameState;
+    }
+
 
     //Instantiate some things
     Thread gameThread;
@@ -61,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void run() {
 
         deltaTime.startDeltaTime();
+
 
         while (gameThread != null) {
 
