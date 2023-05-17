@@ -43,15 +43,15 @@ public class RoomGenerator {
         tileMap[tileMap.length - 1][tileMap.length / 2 + 2] = 4;
         tileMap[tileMap.length - 1][tileMap.length / 2 - 3] = 4;
 
-        for (int i = 0; i < tileMap[0].length; i++) {
-            for (int j = 0; j < tileMap.length; j++){
-                if ( tileMap[j][i] >= 0 && tileMap[j][i] < 10){
-                    System.out.print(" ");
-                }
-                System.out.print(tileMap[j][i] + " ");
-            }
-            System.out.println();
-        }
+//        for (int i = 0; i < tileMap[0].length; i++) {
+//            for (int j = 0; j < tileMap.length; j++){
+//                if ( tileMap[j][i] >= 0 && tileMap[j][i] < 10){
+//                    System.out.print(" ");
+//                }
+//                System.out.print(tileMap[j][i] + " ");
+//            }
+//            System.out.println();
+//        }
         return tileMap;
 
     }
@@ -105,7 +105,6 @@ public class RoomGenerator {
             
             tileMap[currentCordX][cordY + currentDispersion] = 4;
 
-            System.out.println("gen:" + currentCordX + "; " + currentDispersion);
             currentCordX++;
         }
     }
