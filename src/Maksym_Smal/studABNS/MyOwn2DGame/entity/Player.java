@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Player extends Entity{
     GamePanel gamePanel;
@@ -27,6 +28,9 @@ public class Player extends Entity{
 
         screenX = screenCenterX;
         screenY = screenCenterY;
+
+        int roomIndexX;
+        int roomIndexY;
 
         solidArea = new Rectangle(11, 22, 42, 42);
 
@@ -62,14 +66,22 @@ public class Player extends Entity{
 
     public void getPlayerImage() {
         try {
-            up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/player/walk_down_1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/player/walk_down_2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
+            up1 = ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/player/boy_up_1.png")));
+            up2 = ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/player/boy_up_2.png")));
+            down1 = ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/player/walk_down_1.png")));
+            down2 = ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/player/walk_down_2.png")));
+            left1 = ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/player/boy_left_1.png")));
+            left2 = ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/player/boy_left_2.png")));
+            right1 = ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/player/boy_right_1.png")));
+            right2 = ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/player/boy_right_2.png")));
 
         }
         catch (IOException exception) {
@@ -156,6 +168,7 @@ public class Player extends Entity{
                     screenX += motionX;
                 }
             }
+
 
             if (worldX < (gamePanel.maxWorldRow * gamePanel.tileSize) / 3) {
                 worldX += (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 - 1;
