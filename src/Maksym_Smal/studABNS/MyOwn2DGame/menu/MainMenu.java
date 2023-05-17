@@ -3,11 +3,9 @@ package Maksym_Smal.studABNS.MyOwn2DGame.menu;
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
 import java.util.Objects;
 
-public class MainMenu extends JPanel {
+public class MainMenu extends Menu{
 
     Button playButton;
 
@@ -15,50 +13,52 @@ public class MainMenu extends JPanel {
 
     Button quitButton;
 
-    GamePanel gp;
-
-
     public MainMenu(GamePanel gamePanel) {
-        this.gp = gamePanel;
+        super(gamePanel);
 
-        loadImages();
+        defineButtons();
     }
 
-    void loadImages(){
+    void defineButtons(){
         try {
             playButton = new Button(144, 72, ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/play_button_dont_active.png"))));
             playButton.addImage(ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/play_button_active.png"))));
-            playButton.setPosX(gp.screenWidth / 2 - playButton.size.width / 2);
-            playButton.setPosY((int)(gp.screenHeight / 1.7) - playButton.size.height / 2);
-
+            playButton.setPosX(gamePanel.screenWidth / 2 - playButton.size.width / 2);
+            playButton.setPosY((int)(gamePanel.screenHeight / 1.7) - playButton.size.height / 2);
+            buttons.add(playButton);
 
             settingButton = new Button(243, 72, ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/settings_button_dont_active.png"))));
             settingButton.addImage(ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/settings_button_active.png"))));
-            settingButton.setPosX(gp.screenWidth / 2 - settingButton.size.width / 2);
-            settingButton.setPosY((int)(gp.screenHeight / 1.7) + settingButton.size.height);
+            settingButton.setPosX(gamePanel.screenWidth / 2 - settingButton.size.width / 2);
+            settingButton.setPosY((int)(gamePanel.screenHeight / 1.7) + settingButton.size.height);
+            buttons.add(settingButton);
 
             quitButton = new Button(144, 72, ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/quit_button_dont_active.png"))));
             quitButton.addImage(ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/quit_button_active.png"))));
-            quitButton.setPosX(gp.screenWidth / 2 - quitButton.size.width / 2);
-            quitButton.setPosY((int)(gp.screenHeight / 1.7) + (int)(quitButton.size.height * 2.5));
+            quitButton.setPosX(gamePanel.screenWidth / 2 - quitButton.size.width / 2);
+            quitButton.setPosY((int)(gamePanel.screenHeight / 1.7) + (int)(quitButton.size.height * 2.5));
+            buttons.add(quitButton);
+
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    @Override
     public void update() {
 
         if (checkHover(playButton)) {
             playButton.setState(1);
-            if(gp.mouseHandler.isClicked()) {
-                System.out.println("Check");
+            if(gamePanel.mouseHandler.isClicked()) {
+                gamePanel.mouseHandler.reloadClick();
+                gamePanel.setMenuNumber(1);
             }
         }
         else {
@@ -74,30 +74,13 @@ public class MainMenu extends JPanel {
 
         if (checkHover(quitButton)) {
             quitButton.setState(1);
-            if(gp.mouseHandler.isClicked()) {
+            if(gamePanel.mouseHandler.isClicked()) {
                 System.exit(0);
             }
         }
         else {
             quitButton.setState(0);
         }
-        gp.mouseHandler.reloadClick();
-
-    }
-
-    private boolean checkHover(Button button) {
-        int posX = gp.mouseHandler.getMousePosX();
-        int posY = gp.mouseHandler.getMousePosY();
-        return button.posX < posX && button.posX + button.size.width > posX &&
-                button.posY < posY && button.posY + button.size.height > posY;
-    }
-
-    public void draw(Graphics2D g2) {
-        g2.drawImage(playButton.getImage(), playButton.posX, playButton.posY,
-                playButton.size.width , playButton.size.height, null);
-        g2.drawImage(settingButton.getImage(), settingButton.posX, settingButton.posY,
-                settingButton.size.width , settingButton.size.height, null);
-        g2.drawImage(quitButton.getImage(), quitButton.posX, quitButton.posY,
-                quitButton.size.width , quitButton.size.height, null);
+        gamePanel.mouseHandler.reloadClick();
     }
 }
