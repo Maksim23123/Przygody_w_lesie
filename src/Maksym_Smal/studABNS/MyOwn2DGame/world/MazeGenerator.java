@@ -14,12 +14,11 @@ public class MazeGenerator {
                 map[i][j] = -1;
             }
         }
-        generate(100);
     }
 
     String output = "";
 
-    private void generate(int iterations) {
+    public int[][] generate(int iterations) {
         map[(int)(map.length / 2)][(int)(map[0].length / 2)] = 10;
         shapesCount = 0;
 
@@ -67,6 +66,8 @@ public class MazeGenerator {
                 }
             }
         }
+
+        return map;
     }
 
     public int getRandomState(int divider){
