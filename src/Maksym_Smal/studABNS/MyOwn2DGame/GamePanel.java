@@ -1,17 +1,21 @@
 package Maksym_Smal.studABNS.MyOwn2DGame;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.entity.Player;
+import Maksym_Smal.studABNS.MyOwn2DGame.fileManager.FileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.MainMenu;
+import Maksym_Smal.studABNS.MyOwn2DGame.menu.Menu;
+import Maksym_Smal.studABNS.MyOwn2DGame.menu.SavesMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.tile.TileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.world.MazeGenerator;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
 
 
-    String gameState = "mainMenu";
+    String gameState = "menu";
     final int originalTileSize = 32; // 16X16
     final int scale = 2;
     public final int tileSize = originalTileSize * scale;
@@ -24,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     //FPS
     int FPS = 60;
+    private FileManager fileManager;
 
     public void setGameState(String gameState) {
         this.gameState = gameState;
@@ -38,16 +43,22 @@ public class GamePanel extends JPanel implements Runnable {
     TileManager tileManager = new TileManager(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
 
-    MainMenu mainMenu = new MainMenu(this);
+    private int menuNumber = 0;
 
     MazeGenerator mazeGenerator = new MazeGenerator(10, 10);
 
+    ArrayList<Menu> menus = new ArrayList<>();
+
     public MouseHandler mouseHandler = new MouseHandler();
+
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
+
+        menus.add(new MainMenu(this));
+        menus.add(new SavesMenu(this));
 
         this.addKeyListener(keyHandler);
         this.addMouseListener(mouseHandler);
@@ -56,9 +67,17 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
     }
 
+    public void setFileManager(FileManager fileManager) {
+        this.fileManager = fileManager;
+    }
+
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    public void setMenuNumber(int menuNumber) {
+        this.menuNumber = menuNumber;
     }
 
     @Override
@@ -72,8 +91,8 @@ public class GamePanel extends JPanel implements Runnable {
             if (deltaTime.getIntervalProgress() >= 1) {
 
                 switch (gameState) {
-                    case "mainMenu":
-                        mainMenu.update();
+                    case "menu":
+                        menus.get(menuNumber).update();
 
                         repaint();
 
@@ -88,9 +107,6 @@ public class GamePanel extends JPanel implements Runnable {
 
                         break;
                 }
-
-
-
             }
         }
     }
@@ -105,8 +121,8 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D)g;
 
         switch (gameState) {
-            case "mainMenu":
-                mainMenu.draw(g2);
+            case "menu":
+                menus.get(menuNumber).draw(g2);
                 break;
             case "gameLoop":
                 tileManager.draw(g2);
