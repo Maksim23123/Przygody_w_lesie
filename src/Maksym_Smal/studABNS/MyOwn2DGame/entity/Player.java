@@ -19,6 +19,10 @@ public class Player extends Entity{
     public int screenX;
     public int screenY;
 
+    int roomIndexX;
+
+    int roomIndexY;
+
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
@@ -29,14 +33,10 @@ public class Player extends Entity{
         screenX = screenCenterX;
         screenY = screenCenterY;
 
-        int roomIndexX;
-        int roomIndexY;
-
         solidArea = new Rectangle(11, 22, 42, 42);
 
         hitBox = new HitBox(gamePanel, this);
 
-        setDefaultValues();
         getPlayerImage();
     }
 
@@ -90,11 +90,23 @@ public class Player extends Entity{
 
     }
 
-    public void setDefaultValues(){
+    public void setDefaultValues(int roomIndexX, int roomIndexY){
         worldX = gamePanel.tileSize * (gamePanel.maxWorldRow / 2);
         worldY = gamePanel.tileSize * (gamePanel.maxWorldCol / 2);
-        speed = 7;
+        System.out.println("RoomIndexX: " + roomIndexX);
+        System.out.println("RoomIndexY: " + roomIndexY);
+        this.roomIndexX = roomIndexX;
+        this.roomIndexY = roomIndexY;
+        speed = 9; //7
         direction = "down";
+    }
+
+    public int getRoomIndexX() {
+        return roomIndexX;
+    }
+
+    public int getRoomIndexY() {
+        return roomIndexY;
     }
 
     public void update() {
@@ -170,34 +182,38 @@ public class Player extends Entity{
             }
 
 
-            if (worldX < (gamePanel.maxWorldRow * gamePanel.tileSize) / 3) {
-                worldX += (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 - 1;
+            //checking movement between rooms
+            if (worldX < (gamePanel.maxWorldCol * gamePanel.tileSize) / 3 - 1 * gamePanel.tileSize) {
+                worldX += (gamePanel.maxWorldCol * gamePanel.tileSize) / 3 - 1;
+                roomIndexX -= 1;
+                gamePanel.updateTileMap();
+                System.out.println("RoomIndexX: " + roomIndexX);
+                System.out.println("RoomIndexY: " + roomIndexY);
             }
-            if (worldX > ((gamePanel.maxWorldRow * gamePanel.tileSize) / 3) * 2 - 1) {
-                worldX -= (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 + 1;
+            if (worldX > ((gamePanel.maxWorldCol * gamePanel.tileSize) / 3) * 2 - 1) {
+                worldX -= (gamePanel.maxWorldCol * gamePanel.tileSize) / 3 + 1;
+                roomIndexX += 1;
+                gamePanel.updateTileMap();
+                System.out.println("RoomIndexX: " + roomIndexX);
+                System.out.println("RoomIndexY: " + roomIndexY);
             }
 
+            if (worldY < (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 - 1 * gamePanel.tileSize) {
+                worldY += (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 - 1;
+                roomIndexY -= 1;
+                gamePanel.updateTileMap();
+                System.out.println("RoomIndexX: " + roomIndexX);
+                System.out.println("RoomIndexY: " + roomIndexY);
+            }
+            if (worldY > ((gamePanel.maxWorldRow * gamePanel.tileSize) / 3) * 2 - 1) {
+                worldY -= (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 + 1;
+                roomIndexY += 1;
+                gamePanel.updateTileMap();
+                System.out.println("RoomIndexX: " + roomIndexX);
+                System.out.println("RoomIndexY: " + roomIndexY);
+            }
 
-
-
-//             СНЕСК TILE COLLISION
-
-//            collisionOn = false;
-//            gamePanel.collisionChecker.testMotion(this);
-
-            // IF COLLISION IS FALSE, PLAYER САМ MOVE
-
-//            if (!collisionOn) {
-//
-//                switch (direction) {
-//                    case "up" : worldY -= speed; break;
-//                    case "down": worldY += speed; break;
-//                    case "left" : worldX -= speed; break;
-//                    case "right": worldX += speed; break;
-//                }
-//
-//            }
-
+            //---
 
 
             spriteCounter ++;
@@ -213,9 +229,6 @@ public class Player extends Entity{
         }
     }
     public void draw(Graphics2D g2) {
-//        g2.setColor(Color.WHITE);
-//
-//        g2.fillRect(x, y, gamePanel.tileSize, gamePanel.tileSize);
 
         BufferedImage image = null;
 

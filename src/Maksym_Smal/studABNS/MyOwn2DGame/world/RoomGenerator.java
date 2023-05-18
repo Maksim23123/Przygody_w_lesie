@@ -20,45 +20,174 @@ public class RoomGenerator {
                 tileMap[i][j] = 0;
             }
         }
+
+        if (shapeType == -1) {
+            fill(0, 0, 4);
+        }
+
         if (shapeType == 0) {
-            generateSimpleHorizontalLine(0, 2, tileMap.length / 2 + 2, 1);
-            generateSimpleHorizontalLine(0, 2, tileMap.length / 2 - 3, 1);
-            generateSimpleVerticalLine(tileMap[0].length / 2 + 2, tileMap[0].length - 3,
-                    2, 1);
-            generateSimpleVerticalLine(tileMap[0].length / 2 - 3, 2, 2, 1);
-            generateSimpleHorizontalLine(2, tileMap.length - 3, tileMap.length - 3, 1);
-            generateSimpleHorizontalLine(2, tileMap.length - 3,   2, 1);
-            generateSimpleVerticalLine(tileMap[0].length / 2 + 2, tileMap[0].length - 3,
-                    tileMap.length - 3, 1);
-            generateSimpleVerticalLine(tileMap[0].length / 2 - 3, 2, tileMap.length - 3, 1);
-            generateSimpleHorizontalLine(tileMap.length - 1, tileMap.length - 3,
-                    tileMap.length / 2 + 2, 1);
-            generateSimpleHorizontalLine(tileMap.length - 1, tileMap.length - 3,
-                    tileMap.length / 2 - 3, 1);
-            fill(0,0, 4);
-            fill(0,tileMap.length - 1, 4);
+            makeRoom();
+
+            addUpperExit();
+            addLowerExit();
+        }
+
+        if (shapeType == 1) {
+            makeRoom();
+
+            addLeftExit();
+            addRightExit();
+        }
+
+        if (shapeType == 2) {
+            makeRoom();
+
+            addLeftExit();
+        }
+
+        if (shapeType == 3) {
+            makeRoom();
+
+            addUpperExit();
+        }
+
+        if (shapeType == 4) {
+            makeRoom();
+
+            addLowerExit();
+        }
+
+        if (shapeType == 5) {
+            makeRoom();
+
+            addRightExit();
+        }
+
+        if (shapeType == 6) {
+            makeRoom();
+
+            addRightExit();
+            addLeftExit();
+            addUpperExit();
+        }
+
+        if (shapeType == 7) {
+            makeRoom();
+
+            addLowerExit();
+            addLeftExit();
+            addRightExit();
+        }
+
+        if (shapeType == 8) {
+            makeRoom();
+
+            addLeftExit();
+            addUpperExit();
+            addLowerExit();
+        }
+
+        if (shapeType == 9) {
+            makeRoom();
+
+            addRightExit();
+            addUpperExit();
+            addLowerExit();
+        }
+
+        if (shapeType == 10) {
+            makeRoom();
+
+            addLeftExit();
+            addRightExit();
+            addUpperExit();
+            addLowerExit();
         }
 
 
-        tileMap[tileMap.length - 1][tileMap.length / 2 + 2] = 4;
-        tileMap[tileMap.length - 1][tileMap.length / 2 - 3] = 4;
+        if (shapeType == 11) {
+            makeRoom();
 
-//        for (int i = 0; i < tileMap[0].length; i++) {
-//            for (int j = 0; j < tileMap.length; j++){
-//                if ( tileMap[j][i] >= 0 && tileMap[j][i] < 10){
-//                    System.out.print(" ");
-//                }
-//                System.out.print(tileMap[j][i] + " ");
-//            }
-//            System.out.println();
-//        }
+            addLeftExit();
+            addUpperExit();
+        }
+
+        if (shapeType == 12) {
+            makeRoom();
+
+            addRightExit();
+            addUpperExit();
+        }
+
+        if (shapeType == 13) {
+            makeRoom();
+
+            addLeftExit();
+            addLowerExit();
+        }
+
+        if (shapeType == 14) {
+            makeRoom();
+
+            addRightExit();
+            addLowerExit();
+        }
         return tileMap;
-
     }
 
-    void generateSimpleHorizontalLine(int cordX1, int cordX2, int cordY, int dispersion) {
-        tileMap[cordX1][cordY] = 4;
-        tileMap[cordX2][cordY] = 4;
+    private void makeRoom() {
+        generateSimpleVerticalLine(2, tileMap[0].length - 3,
+                2, 1, 4);
+        generateSimpleVerticalLine(tileMap[0].length - 3, 2, tileMap.length - 3, 1, 4);
+        generateSimpleHorizontalLine(2, tileMap.length - 3,
+                tileMap.length - 3, 1, 4);
+        generateSimpleHorizontalLine(2, tileMap.length - 3,   2, 1, 4);
+        fill(0,tileMap.length - 1, 4);
+    }
+
+    private void addUpperExit() {
+        generateSimpleVerticalLine(0, 3, tileMap.length / 2 + 1, 1, 0);
+        generateSimpleVerticalLine(0, 3, tileMap.length / 2 - 2, 1, 0);
+        fill(tileMap.length / 2 - 1,0, 0);
+        fill(tileMap.length / 2 - 1,1, 0);
+        fill(tileMap.length / 2 - 1,2, 0);
+        fill(tileMap.length / 2 - 1,3, 0);
+    }
+
+    private void addLowerExit(){
+        generateSimpleVerticalLine(tileMap.length - 1, tileMap.length - 4,
+                tileMap.length / 2 + 1, 1, 0);
+        generateSimpleVerticalLine(tileMap.length - 1, tileMap.length - 4,
+                tileMap.length / 2 - 2, 1, 0);
+        fill(tileMap.length / 2 - 1,tileMap.length - 1, 0);
+        fill(tileMap.length / 2 - 1,tileMap.length - 2, 0);
+        fill(tileMap.length / 2 - 1,tileMap.length - 3, 0);
+        fill(tileMap.length / 2 - 1,tileMap.length - 4, 0);
+    }
+
+    private void addRightExit() {
+        generateSimpleHorizontalLine(tileMap.length - 1, tileMap.length - 4,
+                tileMap.length / 2 + 1, 1, 0);
+        generateSimpleHorizontalLine(tileMap.length - 1, tileMap.length - 4,
+                tileMap.length / 2 - 2, 1, 0);
+        fill(tileMap.length - 1, tileMap.length / 2 - 1, 0);
+        fill(tileMap.length - 2, tileMap.length / 2 - 1, 0);
+        fill(tileMap.length - 3, tileMap.length / 2 - 1, 0);
+        fill(tileMap.length - 4, tileMap.length / 2 - 1, 0);
+    }
+
+    private void addLeftExit() {
+        generateSimpleHorizontalLine(0, 3, tileMap.length / 2 + 1, 1, 0);
+        generateSimpleHorizontalLine(0, 3, tileMap.length / 2 - 2, 1, 0);
+        fill(0, tileMap.length / 2 - 1, 0);
+        fill(1, tileMap.length / 2 - 1, 0);
+        fill(2, tileMap.length / 2 - 1, 0);
+        fill(3, tileMap.length / 2 - 1, 0);
+    }
+
+    void generateSimpleHorizontalLine(int cordX1, int cordX2, int cordY, int dispersion, int fillBy) {
+        tileMap[cordX1][cordY] = fillBy;
+        tileMap[cordX2][cordY] = fillBy;
 
         double randomizer;
 
@@ -103,15 +232,15 @@ public class RoomGenerator {
                 }
             }
             
-            tileMap[currentCordX][cordY + currentDispersion] = 4;
+            tileMap[currentCordX][cordY + currentDispersion] = fillBy;
 
             currentCordX++;
         }
     }
 
-    void generateSimpleVerticalLine(int cordY1, int cordY2, int cordX, int dispersion) {
-        tileMap[cordX][cordY1] = 4;
-        tileMap[cordX][cordY2] = 4;
+    void generateSimpleVerticalLine(int cordY1, int cordY2, int cordX, int dispersion, int fillBy) {
+        tileMap[cordX][cordY1] = fillBy;
+        tileMap[cordX][cordY2] = fillBy;
 
         double randomizer;
 
@@ -156,7 +285,7 @@ public class RoomGenerator {
                 }
             }
 
-            tileMap[cordX + currentDispersion][currentCordY] = 4;
+            tileMap[cordX + currentDispersion][currentCordY] = fillBy;
 
             currentCordY++;
         }

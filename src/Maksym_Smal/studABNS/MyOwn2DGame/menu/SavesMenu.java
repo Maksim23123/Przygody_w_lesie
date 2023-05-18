@@ -4,7 +4,10 @@ import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 import Maksym_Smal.studABNS.MyOwn2DGame.fileManager.FileManager;
 
 import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.WeakHashMap;
 
 public class SavesMenu extends Menu{
 
@@ -23,10 +26,47 @@ public class SavesMenu extends Menu{
     @Override
     public void update() {
         if (checkHover(save1Button)) {
-
             if (gamePanel.mouseHandler.isClicked()) {
-                gamePanel.setFileManager(new FileManager("saves/save1"));
                 gamePanel.mouseHandler.reloadClick();
+                gamePanel.fileManager = new FileManager("saves/save1");
+                if (gamePanel.fileManager.isExist("saves/save1/mazeMap.bin")) {
+                    gamePanel.fileManager.loadSave();
+                    int roomIndexX = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap()[0].length) /
+                            gamePanel.fileManager.getMazeMap()[0].length);
+                    int roomIndexY = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap().length) /
+                            gamePanel.fileManager.getMazeMap().length);
+                    while (gamePanel.fileManager.getMazeMap()[roomIndexX][roomIndexY] == -1) {
+                        roomIndexX = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap()[0].length) /
+                                gamePanel.fileManager.getMazeMap()[0].length);
+                        roomIndexY = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap().length) /
+                                gamePanel.fileManager.getMazeMap().length);
+
+                    }
+                    gamePanel.player.setDefaultValues(roomIndexX, roomIndexY);
+
+                    gamePanel.updateTileMap();
+                }
+                else {
+                    try {
+                        gamePanel.fileManager.generateNewSave();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    int roomIndexX = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap()[0].length) /
+                            gamePanel.fileManager.getMazeMap()[0].length);
+                    int roomIndexY = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap().length) /
+                            gamePanel.fileManager.getMazeMap().length);
+                    while (gamePanel.fileManager.getMazeMap()[roomIndexX][roomIndexY] == -1) {
+                        roomIndexX = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap()[0].length) /
+                                gamePanel.fileManager.getMazeMap()[0].length);
+                        roomIndexY = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap().length) /
+                                gamePanel.fileManager.getMazeMap().length);
+
+                    }
+                    gamePanel.player.setDefaultValues(roomIndexX, roomIndexY);
+
+                    gamePanel.updateTileMap();
+                }
                 gamePanel.setGameState("gameLoop");
             }
         }

@@ -1,7 +1,7 @@
 package Maksym_Smal.studABNS.MyOwn2DGame.tile;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
-import Maksym_Smal.studABNS.MyOwn2DGame.world.RoomGenerator;
+import Maksym_Smal.studABNS.MyOwn2DGame.entity.Player;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -15,11 +15,9 @@ public class TileManager {
     GamePanel gamePanel;
     public Tile[] tiles;
     public int mapTileNumber[][];
-    RoomGenerator roomGenerator;
 
     public TileManager(GamePanel gamePanel){
         this.gamePanel = gamePanel;
-        roomGenerator = new RoomGenerator();
 
         tiles = new Tile[10];
         mapTileNumber = new int[gamePanel.maxWorldCol][gamePanel.maxWorldRow];
@@ -27,12 +25,10 @@ public class TileManager {
 
         getTileImages();
         mapTileNumber = new int[90][90];
-        fillMap(0);
-        roomGenerator.generate(0);
-        generateShapeSlot(0, 1);
-        generateShapeSlot(1, 1);
-        generateShapeSlot(2, 1);
-        //loadMap("/maps/world01.txt");
+        fillMap(0, 4);
+
+
+
         for (int i = 0; i < mapTileNumber.length; i++) {
             for (int j = 0; j < mapTileNumber[0].length; j++){
                 System.out.print(mapTileNumber[j][i] + " ");
@@ -40,6 +36,84 @@ public class TileManager {
             System.out.println();
         }
     }
+
+    public void updateTileMap() throws IOException {
+        Player player = gamePanel.player;
+        int[][] tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX(), player.getRoomIndexY());
+        for (int i = 0; i < tileMap.length; i++ ){
+            for (int j = 0; j < tileMap.length; j ++) {
+                mapTileNumber[30 + j][30 + i] = tileMap[j][i];
+            }
+        }
+
+
+        if (player.getRoomIndexX() > 0) {
+            tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX() - 1, player.getRoomIndexY());
+            for (int i = 0; i < tileMap.length; i++ ){
+                for (int j = 0; j < tileMap.length; j ++) {
+                    mapTileNumber[j][30 + i] = tileMap[j][i];
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < tileMap.length; i++ ){
+                for (int j = 0; j < tileMap.length; j ++) {
+                    mapTileNumber[j][30 + i] = 4;
+                }
+            }
+        }
+
+        if (player.getRoomIndexX() < gamePanel.fileManager.getMazeMap()[0].length - 1) {
+            tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX() + 1, player.getRoomIndexY());
+            for (int i = 0; i < tileMap.length; i++ ){
+                for (int j = 0; j < tileMap.length; j ++) {
+                    mapTileNumber[30 * 2 + j][30 + i] = tileMap[j][i];
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < tileMap.length; i++ ){
+                for (int j = 0; j < tileMap.length; j ++) {
+                    mapTileNumber[30 * 2 + j][30 + i] = 4;
+                }
+            }
+        }
+
+        if (player.getRoomIndexY() > 0) {
+            tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX(), player.getRoomIndexY() - 1);
+            for (int i = 0; i < tileMap.length; i++ ){
+                for (int j = 0; j < tileMap.length; j ++) {
+                    mapTileNumber[30 + j][i] = tileMap[j][i];
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < tileMap.length; i++ ){
+                for (int j = 0; j < tileMap.length; j ++) {
+                    mapTileNumber[30 + j][i] = 4;
+                }
+            }
+        }
+
+        if (player.getRoomIndexY() < gamePanel.fileManager.getMazeMap()[0].length - 1) {
+            tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX(), player.getRoomIndexY() + 1);
+            for (int i = 0; i < tileMap.length; i++ ){
+                for (int j = 0; j < tileMap.length; j ++) {
+                    mapTileNumber[30 + j][30 * 2 + i] = tileMap[j][i];
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < tileMap.length; i++ ){
+                for (int j = 0; j < tileMap.length; j ++) {
+                    System.out.println("check");
+                    mapTileNumber[30 + j][30 * 2 + i] = 4;
+                }
+            }
+        }
+    }
+
+    //Will reuse it
 
     public void loadMap(String filePath) {
 
@@ -73,36 +147,36 @@ public class TileManager {
 
             e.printStackTrace();
         }
-
-
-
-//colision diagnostic
-//        for (int i = 0; i < 50; i++) {
-//            for (int j = 0; j < 50; j++) {
-//                if (tiles[mapTileNumber[j][i]].collision) {
-//                    System.out.print("1 ");
-//                }
-//                else {
-//                    System.out.print("0 ");
-//                }
-//            }
-//            System.out.print("\n");
-//        }
     }
 
-    void generateShapeSlot(int slotIndexX, int slotIndexY) {
-        int[][] tileMap = roomGenerator.getTileMap();
-        for (int i = 0; i < tileMap[0].length; i++ ){
-            for (int j = 0; j < tileMap.length; j ++) {
-                mapTileNumber[30 * slotIndexX + j][30 * slotIndexY + i] = tileMap[j][i];
-            }
-        }
-    }
-
-    void fillMap(int tile) {
+    void fillMap(int tile, int tile1) {
         for (int i = 0; i < mapTileNumber[0].length; i++) {
             for (int j = 0; j < mapTileNumber.length; j++) {
                 mapTileNumber[j][i] = tile;
+            }
+        }
+
+        for (int i = 0; i < 30; i++ ){
+            for (int j = 0; j < 30; j ++) {
+                mapTileNumber[j][i] = tile1;
+            }
+        }
+
+        for (int i = 0; i < 30; i++ ){
+            for (int j = 0; j < 30; j ++) {
+                mapTileNumber[j][30 * 2 + i] = tile1;
+            }
+        }
+
+        for (int i = 0; i < 30; i++ ){
+            for (int j = 0; j < 30; j ++) {
+                mapTileNumber[30 * 2 + j][i] = tile1;
+            }
+        }
+
+        for (int i = 0; i < 30; i++ ){
+            for (int j = 0; j < 30; j ++) {
+                mapTileNumber[30 * 2 + j][30 * 2 + i] = tile1;
             }
         }
 

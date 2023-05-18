@@ -18,6 +18,10 @@ public class MazeGenerator {
 
     String output = "";
 
+    public void setMap(int[][] map) {
+        this.map = map;
+    }
+
     public int[][] generate(int iterations) {
         map[(int)(map.length / 2)][(int)(map[0].length / 2)] = 10;
         shapesCount = 0;
@@ -66,6 +70,8 @@ public class MazeGenerator {
                 }
             }
         }
+
+        System.out.println(getOutput());
 
         return map;
     }
