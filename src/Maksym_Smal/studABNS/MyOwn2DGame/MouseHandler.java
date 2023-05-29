@@ -16,12 +16,14 @@ public class MouseHandler extends MouseListener {
         return mousePosY;
     }
 
-    public void reloadClick() {
-        clicked = false;
-    }
-
-    public boolean isClicked() {
-        return clicked;
+    public boolean getClicked() {
+        if (clicked) {
+            clicked = false;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     @Override
@@ -31,7 +33,20 @@ public class MouseHandler extends MouseListener {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
+    public void mousePressed(MouseEvent e) {
         clicked = true;
     }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        clicked = false;
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        mousePosX = e.getX();
+        mousePosY = e.getY();
+    }
+
+
 }

@@ -56,8 +56,7 @@ public class MainMenu extends Menu{
 
         if (checkHover(playButton)) {
             playButton.setState(1);
-            if(gamePanel.mouseHandler.isClicked()) {
-                gamePanel.mouseHandler.reloadClick();
+            if(gamePanel.mouseHandler.getClicked()) {
                 gamePanel.setMenuNumber(1);
             }
         }
@@ -74,13 +73,12 @@ public class MainMenu extends Menu{
 
         if (checkHover(quitButton)) {
             quitButton.setState(1);
-            if(gamePanel.mouseHandler.isClicked()) {
+            if(gamePanel.mouseHandler.getClicked()) {
                 System.exit(0);
             }
         }
         else {
             quitButton.setState(0);
         }
-        gamePanel.mouseHandler.reloadClick();
     }
 }

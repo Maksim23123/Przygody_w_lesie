@@ -44,6 +44,6 @@ public class DeltaTime {
     }
 
     public double getDeltaSuccess() {
-        return targetInterval / currentInterval;
+        return currentInterval / targetInterval;
     }
 }

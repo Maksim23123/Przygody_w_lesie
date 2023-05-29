@@ -1,11 +1,14 @@
 package Maksym_Smal.studABNS.MyOwn2DGame;
 
+import Maksym_Smal.studABNS.MyOwn2DGame.entity.EnemyManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.entity.Player;
 import Maksym_Smal.studABNS.MyOwn2DGame.fileManager.FileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.MainMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.Menu;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.SavesMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.tile.TileManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.VisualOutputManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.world.RoomHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,11 +22,13 @@ public class GamePanel extends JPanel implements Runnable {
     final int originalTileSize = 32; // 16X16
     final int scale = 2;
     public final int tileSize = originalTileSize * scale;
-    public int screenWidth = 1600;//16 * 3 * 30;
-    public int screenHeight = 800;//16 * 3 * 15;
+    public int screenWidth = 1500;//16 * 3 * 30;
+    public int screenHeight = 700;//16 * 3 * 15;
 
     public final int maxWorldCol = 90;
     public final int maxWorldRow = 90;
+
+    private int menuNumber = 0;
 
 
     //FPS
@@ -43,14 +48,19 @@ public class GamePanel extends JPanel implements Runnable {
     TileManager tileManager = new TileManager(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
 
-    private int menuNumber = 0;
-
     ArrayList<Menu> menus = new ArrayList<>();
 
     public MouseHandler mouseHandler = new MouseHandler();
 
     public FileManager fileManager;
 
+    public EnemyManager enemyManager = new EnemyManager(this);
+
+    public RoomHandler roomHandler = new RoomHandler(this);
+
+    public ImageManager imageManager = new ImageManager();
+
+    public VisualOutputManager visualOutputManager = new VisualOutputManager(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -65,6 +75,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.addMouseMotionListener(mouseHandler);
 
         this.setFocusable(true);
+        this.requestFocus();
     }
 
     public void updateTileMap() {
@@ -93,7 +104,8 @@ public class GamePanel extends JPanel implements Runnable {
         while (gameThread != null) {
 
             if (deltaTime.getIntervalProgress() >= 1) {
-
+//                System.out.println(deltaTime.getCurrentInterval());
+//                System.out.println(enemyManager.getEnemies().size());
                 switch (gameState) {
                     case "menu":
                         menus.get(menuNumber).update();
@@ -102,7 +114,13 @@ public class GamePanel extends JPanel implements Runnable {
 
                         break;
                     case "gameLoop":
-//                        System.out.println("FPS: " + deltaTime.getCurrentInterval());
+
+//                        if (!enemyManager.getEnemies().isEmpty()) {
+//                            System.out.println( "----\n" + enemyManager.getEnemies().
+//                                    get(0).attributeManager.showAttributes());
+//                        }
+                        System.out.println(player.attributeManager.getHealth());
+
                         // 1 UPDATE: update information such as character positions
                         update();
 
@@ -118,6 +136,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void update(){
         screenHeight = getHeight();
         screenWidth = getWidth();
+        enemyManager.update();
         player.update();
     }
 
@@ -132,7 +151,11 @@ public class GamePanel extends JPanel implements Runnable {
                 break;
             case "gameLoop":
                 tileManager.draw(g2);
+//                goblin.draw(g2);
+                enemyManager.draw(g2);
                 player.draw(g2);
+                player.weapon.draw(g2);
+                visualOutputManager.draw(g2);
                 break;
         }
 

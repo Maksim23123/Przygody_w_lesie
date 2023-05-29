@@ -1,5 +1,6 @@
 package Maksym_Smal.studABNS.MyOwn2DGame.fileManager;
 
+import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 import Maksym_Smal.studABNS.MyOwn2DGame.world.MazeGenerator;
 import Maksym_Smal.studABNS.MyOwn2DGame.world.RoomGenerator;
 
@@ -13,12 +14,11 @@ public class FileManager {
 
     int[][] mazeMap;
 
+    GamePanel gamePanel;
 
 
-
-
-
-    public FileManager(String path) {
+    public FileManager(String path, GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
         filePath = path;
         saveFolder = new File(filePath);
         saveFolder.mkdirs();
@@ -63,8 +63,10 @@ public class FileManager {
 
     public int[][] loadOrGenerateRoom(int indexX, int indexY) throws IOException {
         String filePath = this.filePath + "/rooms/room" + indexX + "_" + indexY + ".bin";
+
         File file = new File(this.filePath + "/rooms/");
         file.mkdirs();
+
         int[][] room = new int[30][30];
         if (indexX >= 0 && indexY >= 0 && indexX < mazeMap.length && indexY < mazeMap[0].length) {
             file = new File(filePath);
@@ -144,8 +146,21 @@ public class FileManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
+    public static void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
 
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteFolder(file);
+                } else {
+                    file.delete();
+                }
+            }
+        }
+
+        folder.delete();
+    }
 }

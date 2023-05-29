@@ -27,19 +27,13 @@ public class TileManager {
         mapTileNumber = new int[90][90];
         fillMap(0, 4);
 
-
-
-        for (int i = 0; i < mapTileNumber.length; i++) {
-            for (int j = 0; j < mapTileNumber[0].length; j++){
-                System.out.print(mapTileNumber[j][i] + " ");
-            }
-            System.out.println();
-        }
+        mapTileNumber = new int[90][90];
     }
 
     public void updateTileMap() throws IOException {
+        gamePanel.roomHandler.resetUses();
         Player player = gamePanel.player;
-        int[][] tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX(), player.getRoomIndexY());
+        int[][] tileMap = gamePanel.roomHandler.getRoom(player.getRoomIndexX(), player.getRoomIndexY());
         for (int i = 0; i < tileMap.length; i++ ){
             for (int j = 0; j < tileMap.length; j ++) {
                 mapTileNumber[30 + j][30 + i] = tileMap[j][i];
@@ -47,8 +41,15 @@ public class TileManager {
         }
 
 
+
+        if (!gamePanel.roomHandler.testExplored(player.getRoomIndexX(), player.getRoomIndexY())) {
+            gamePanel.roomHandler.loadEnemies();
+            gamePanel.roomHandler.setExplored(player.getRoomIndexX(), player.getRoomIndexY(),true);
+        }
+
+
         if (player.getRoomIndexX() > 0) {
-            tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX() - 1, player.getRoomIndexY());
+            tileMap = gamePanel.roomHandler.getRoom(player.getRoomIndexX() - 1, player.getRoomIndexY());
             for (int i = 0; i < tileMap.length; i++ ){
                 for (int j = 0; j < tileMap.length; j ++) {
                     mapTileNumber[j][30 + i] = tileMap[j][i];
@@ -64,7 +65,7 @@ public class TileManager {
         }
 
         if (player.getRoomIndexX() < gamePanel.fileManager.getMazeMap()[0].length - 1) {
-            tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX() + 1, player.getRoomIndexY());
+            tileMap = gamePanel.roomHandler.getRoom(player.getRoomIndexX() + 1, player.getRoomIndexY());
             for (int i = 0; i < tileMap.length; i++ ){
                 for (int j = 0; j < tileMap.length; j ++) {
                     mapTileNumber[30 * 2 + j][30 + i] = tileMap[j][i];
@@ -80,7 +81,7 @@ public class TileManager {
         }
 
         if (player.getRoomIndexY() > 0) {
-            tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX(), player.getRoomIndexY() - 1);
+            tileMap = gamePanel.roomHandler.getRoom(player.getRoomIndexX(), player.getRoomIndexY() - 1);
             for (int i = 0; i < tileMap.length; i++ ){
                 for (int j = 0; j < tileMap.length; j ++) {
                     mapTileNumber[30 + j][i] = tileMap[j][i];
@@ -96,7 +97,7 @@ public class TileManager {
         }
 
         if (player.getRoomIndexY() < gamePanel.fileManager.getMazeMap()[0].length - 1) {
-            tileMap = gamePanel.fileManager.loadOrGenerateRoom(player.getRoomIndexX(), player.getRoomIndexY() + 1);
+            tileMap = gamePanel.roomHandler.getRoom(player.getRoomIndexX(), player.getRoomIndexY() + 1);
             for (int i = 0; i < tileMap.length; i++ ){
                 for (int j = 0; j < tileMap.length; j ++) {
                     mapTileNumber[30 + j][30 * 2 + i] = tileMap[j][i];
@@ -106,11 +107,11 @@ public class TileManager {
         else {
             for (int i = 0; i < tileMap.length; i++ ){
                 for (int j = 0; j < tileMap.length; j ++) {
-                    System.out.println("check");
                     mapTileNumber[30 + j][30 * 2 + i] = 4;
                 }
             }
         }
+        gamePanel.roomHandler.clearUnusable();
     }
 
     //Will reuse it
