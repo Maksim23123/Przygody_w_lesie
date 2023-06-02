@@ -6,18 +6,14 @@ import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.Weapon;
 
 import java.awt.*;
 
-
-public class Goblin extends Enemy {
+public class GoblinArcher extends Enemy {
 
     public Weapon weapon;
-    String weaponState = "right";
-    boolean weaponMoving = false;
-
-    int weaponAngleCounter = 0;
-    int weaponIncreaseValue = 45;
     int weaponReloadTimer = 0;
 
-    public Goblin(GamePanel gamePanel) {
+    int confusionTime;
+
+    public GoblinArcher(GamePanel gamePanel) {
         super(gamePanel);
 
         confusionTime = 30;
@@ -26,19 +22,16 @@ public class Goblin extends Enemy {
     }
 
     @Override
-    public void setPosition(int cordX, int cordY) {
-        worldX = cordX;
-        worldY = cordY;
-    }
-
-    @Override
-    public void setDefaultValues(){
+    public void setDefaultValues() {
         solidArea = new Rectangle(11, 22, 42, 42);
         hitBox = new HitBox(gamePanel, this);
         setPosition(45  * gamePanel.tileSize, 45  * gamePanel.tileSize);
         direction = "down";
-        weapon = new Weapon(gamePanel , gamePanel.imageManager.getImageByTag("sword"));
+        weapon = new Weapon(gamePanel , gamePanel.imageManager.getImageByTag("bow"));
         attributeManager.setRandomAttributes(1);
+
+        attributeManager.setAttackCooldown(30 + 30 * Random.getRandomInt(4, true) +
+                attributeManager.getAttackCooldown());
     }
 
     @Override
@@ -48,6 +41,21 @@ public class Goblin extends Enemy {
 
         hitBox.update();
         attributeManager.update();
+
+        int complementValue = 1;
+
+        double distance = Math.sqrt(Math.pow(worldX - targetCordX, 2) + Math.pow(worldY - targetCordY, 2));
+
+        if (distance < gamePanel.tileSize * 7) {
+            complementValue = -1;
+            moving = true;
+        }
+        else if (distance < gamePanel.tileSize * 9) {
+            moving = false;
+        }
+        else {
+            moving = true;
+        }
 
         if (gamePanel.collisionChecker.testMotion(this, 0, 0)) {
             pushedOut = false;
@@ -69,7 +77,7 @@ public class Goblin extends Enemy {
             }
         }
         else if (moving && confusionTime <= 0) {
-            move(targetCordX, targetCordY, false, 1, attributeManager.speed);
+            move(targetCordX, targetCordY, false, complementValue, attributeManager.speed);
         }
 
         if (confusionTime > 0) {
@@ -81,7 +89,6 @@ public class Goblin extends Enemy {
 
     @Override
     public void draw(Graphics2D g2) {
-
         screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
@@ -104,7 +111,7 @@ public class Goblin extends Enemy {
 
     private void updateWeapon() {
 
-        int distance = 50;
+        int distance = 20;
 
         double targetDistance = Math.sqrt(Math.pow(worldX - targetCordX, 2) +
                 Math.pow(worldY - targetCordY, 2));
@@ -122,46 +129,21 @@ public class Goblin extends Enemy {
             angle = 180 - angle;
         }
 
-        if (targetDistance < attributeManager.getAttackFarRange() && weaponReloadTimer == 0 &&
+        if (targetDistance < gamePanel.tileSize * 10 && weaponReloadTimer == 0 &&
                 confusionTime <= 0) {
-            weaponMoving = true;
             weaponReloadTimer = attributeManager.attackCooldown;
-            if (gamePanel.player.getRollingTime() == 0) {
-                gamePanel.player.attributeManager.dealDamage(attributeManager.getOutputDamage());
-                gamePanel.player.pushAway(worldX, worldY, 15, 5);
-            }
+            gamePanel.projectileManager.createProjectile(worldX, worldY, targetCordX, targetCordY, 15,
+                    gamePanel.imageManager.getImageByTag("arrow"), this);
         }
-
-        angle += weaponIncreaseValue;
 
         if (weaponReloadTimer > 0) {
             weaponReloadTimer--;
         }
 
-        if (weaponMoving) {
-            weaponAngleCounter += 15;
-            if (weaponState.equals("right")) {
-                angle -= weaponAngleCounter;
-            } else {
-                angle += weaponAngleCounter;
-            }
-
-            if (weaponAngleCounter >= 90) {
-                if (weaponState.equals("right")) {
-                    weaponState = "left";
-                    weaponIncreaseValue = -45;
-                } else {
-                    weaponState = "right";
-                    weaponIncreaseValue = 45;
-                }
-                weaponMoving = false;
-                weaponAngleCounter = 0;
-            }
-        } else {
-            weapon.setAngle(angle);
-        }
+        weapon.setAngle(angle);
 
         weapon.setScreenX((int) (screenX - distance * Math.cos(Math.toRadians(angle + 90))));
         weapon.setScreenY((int) (screenY - distance * Math.sin(Math.toRadians(angle + 90))));
     }
+
 }

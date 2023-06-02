@@ -30,6 +30,10 @@ public class Player extends Entity{
     int weaponAngleCounter = 0;
     int weaponIncreaseValue = 45;
     int weaponReloadTimer = 0;
+    private int parryTime = 0;
+
+    int rollingTime = 0;
+    int rollingCooldown = 0;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         this.gamePanel = gamePanel;
@@ -90,8 +94,7 @@ public class Player extends Entity{
                     getResourceAsStream("/player/boy_right_1.png")));
             right2 = ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/player/boy_right_2.png")));
-            weapon = new Weapon(gamePanel ,ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/gui/gray_boxes/Sword.png"))));
+            weapon = new Weapon(gamePanel ,gamePanel.imageManager.getImageByTag("sword"));
 
         }
         catch (IOException exception) {
@@ -126,6 +129,10 @@ public class Player extends Entity{
         return roomIndexY;
     }
 
+    public int getRollingTime() {
+        return rollingTime;
+    }
+
     private void updateWeapon() {
 
         int distance = 50;
@@ -151,6 +158,7 @@ public class Player extends Entity{
         if (gamePanel.mouseHandler.getClicked() && weaponReloadTimer == 0) {
             weaponMoving = true;
             weaponReloadTimer = attributeManager.attackCooldown;
+            parryTime = attributeManager.getAttackCooldown();
             dealDamage(angle);
         }
 
@@ -158,6 +166,10 @@ public class Player extends Entity{
 
         if (weaponReloadTimer > 0) {
             weaponReloadTimer--;
+        }
+
+        if (parryTime > 0) {
+            parryTime--;
         }
 
         if (weaponMoving) {
@@ -228,12 +240,22 @@ public class Player extends Entity{
         }
     }
 
+
+
     public void update() {
         updateCameraRubberBand();
 
         attributeManager.update();
 
+        hitBox.update();
+
         gamePanel.collisionChecker.testMotion(this, 0, 0);
+
+
+        if (keyHandler.getPressedButtonsQueue().contains("Space") && rollingCooldown == 0) {
+            rollingTime = 20;
+            rollingCooldown = 45;
+        }
 
         if (stackInWall) {
             move(45 * gamePanel.tileSize,45 * gamePanel.tileSize, true, 1,
@@ -242,14 +264,23 @@ public class Player extends Entity{
         else if (pushedAway) {
             move(pushPointX, pushPointY, false, -1, getPushAwaySpeed());
             setPushAwayDuration(getPushAwayDuration() - 1);
-//            if (!pushedAway) {
-//                confusionTime += getRandomInt(20, false);
-//            }
+        }
+        else if (rollingTime > 0) {
+            controlMoveWithIgnoringEntities(attributeManager.speed * 2);
+        }
+        else {
+            controlledMotion();
+        }
+
+        if (rollingCooldown > 0) {
+            rollingCooldown--;
+        }
+
+        if (rollingTime > 0) {
+            rollingTime--;
         }
 
         setStackInWall(false);
-
-        controlledMotion();
         updateWeapon();
     }
 
@@ -263,7 +294,6 @@ public class Player extends Entity{
         int complementValueX = 0;
         int complementValueY = 0;
 
-        hitBox.update();
 
         if (keyHandler.getPressedButtonsQueue().contains("A") ||
                 keyHandler.getPressedButtonsQueue().contains("W") ||
@@ -322,42 +352,7 @@ public class Player extends Entity{
                 }
             }
 
-
-            //checking movement between rooms
-            if (worldX < (gamePanel.maxWorldCol * gamePanel.tileSize) / 3 - 1 * gamePanel.tileSize) {
-                worldX += (gamePanel.maxWorldCol * gamePanel.tileSize) / 3;
-                roomIndexX -= 1;
-                gamePanel.updateTileMap();
-//                System.out.println("RoomIndexX: " + roomIndexX);
-//                System.out.println("RoomIndexY: " + roomIndexY);
-            }
-            if (worldX > ((gamePanel.maxWorldCol * gamePanel.tileSize) / 3) * 2 - 1) {
-                worldX -= (gamePanel.maxWorldCol * gamePanel.tileSize) / 3;
-                roomIndexX += 1;
-                gamePanel.updateTileMap();
-//                System.out.println("RoomIndexX: " + roomIndexX);
-//                System.out.println("RoomIndexY: " + roomIndexY);
-            }
-
-            if (worldY < (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 - 1 * gamePanel.tileSize) {
-                worldY += (gamePanel.maxWorldRow * gamePanel.tileSize) / 3;
-                roomIndexY -= 1;
-                gamePanel.updateTileMap();
-//                System.out.println("RoomIndexX: " + roomIndexX);
-//                System.out.println("RoomIndexY: " + roomIndexY);
-            }
-            if (worldY > ((gamePanel.maxWorldRow * gamePanel.tileSize) / 3) * 2 - 1) {
-                worldY -= (gamePanel.maxWorldRow * gamePanel.tileSize) / 3;
-                roomIndexY += 1;
-                gamePanel.updateTileMap();
-//                System.out.println("RoomIndexX: " + roomIndexX);
-//                System.out.println("RoomIndexY: " + roomIndexY);
-            }
-
-
-
-            //---
-
+            checkingMovementBetweenRooms();
 
             spriteCounter ++;
             if (spriteCounter  > 12) {
@@ -371,6 +366,32 @@ public class Player extends Entity{
             }
         }
     }
+
+    void checkingMovementBetweenRooms() {
+        if (worldX < (gamePanel.maxWorldCol * gamePanel.tileSize) / 3 - 1 * gamePanel.tileSize) {
+            worldX += (gamePanel.maxWorldCol * gamePanel.tileSize) / 3;
+            roomIndexX -= 1;
+            gamePanel.updateTileMap();
+        }
+        if (worldX > ((gamePanel.maxWorldCol * gamePanel.tileSize) / 3) * 2 - 1) {
+            worldX -= (gamePanel.maxWorldCol * gamePanel.tileSize) / 3;
+            roomIndexX += 1;
+            gamePanel.updateTileMap();
+        }
+
+        if (worldY < (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 - 1 * gamePanel.tileSize) {
+            worldY += (gamePanel.maxWorldRow * gamePanel.tileSize) / 3;
+            roomIndexY -= 1;
+            gamePanel.updateTileMap();
+        }
+        if (worldY > ((gamePanel.maxWorldRow * gamePanel.tileSize) / 3) * 2 - 1) {
+            worldY -= (gamePanel.maxWorldRow * gamePanel.tileSize) / 3;
+            roomIndexY += 1;
+            gamePanel.updateTileMap();
+        }
+    }
+
+
     public void draw(Graphics2D g2) {
 
         BufferedImage image = null;
@@ -465,5 +486,76 @@ public class Player extends Entity{
                 screenX += motionX / 2;
             }
         }
+
+        checkingMovementBetweenRooms();
+    }
+
+    void controlMoveWithIgnoringEntities(int speed) {
+        boolean verticalMotion = false;
+        boolean horizontalMotion = false;
+
+        int motionX = 0;
+        int motionY = 0;
+
+        int complementValueX = 0;
+        int complementValueY = 0;
+
+        if (keyHandler.getPressedButtonsQueue().contains("A") ||
+                keyHandler.getPressedButtonsQueue().contains("W") ||
+                keyHandler.getPressedButtonsQueue().contains("D") ||
+                keyHandler.getPressedButtonsQueue().contains("S")) {
+            if (keyHandler.getPressedButtonsQueue().contains("W")) {
+                direction = "up";
+                motionY -= speed;
+                complementValueY = -1;
+                verticalMotion = true;
+            }
+            if (keyHandler.getPressedButtonsQueue().contains("S")) {
+                direction = "down";
+                motionY += speed;
+                complementValueY = 1;
+                verticalMotion = true;
+            }
+            if (keyHandler.getPressedButtonsQueue().contains("D")) {
+                direction = "right";
+                motionX += speed;
+                complementValueX = 1;
+                horizontalMotion = true;
+            }
+            if (keyHandler.getPressedButtonsQueue().contains("A")) {
+                direction = "left";
+                motionX -= speed;
+                complementValueX = -1;
+                horizontalMotion = true;
+            }
+
+
+            if (verticalMotion && horizontalMotion) {
+                motionX *= 0.707;
+                motionY *= 0.707;
+                motionX += complementValueX;
+                motionY += complementValueY;
+                if (gamePanel.collisionChecker.testMotionWithIgnoringEntities(this, motionX, 0)) {
+                    worldX += motionX;
+                    screenX += motionX;
+                }
+                if (gamePanel.collisionChecker.testMotionWithIgnoringEntities(this, 0, motionY)) {
+                    worldY += motionY;
+                    screenY += motionY;
+                }
+            } else if (verticalMotion) {
+                if (gamePanel.collisionChecker.testMotionWithIgnoringEntities(this, 0, motionY)) {
+                    worldY += motionY;
+                    screenY += motionY;
+                }
+            } else if (horizontalMotion) {
+                if (gamePanel.collisionChecker.testMotionWithIgnoringEntities(this, motionX, 0)) {
+                    worldX += motionX;
+                    screenX += motionX;
+                }
+            }
+        }
+
+        checkingMovementBetweenRooms();
     }
 }

@@ -25,10 +25,6 @@ public class KeyHandler implements KeyListener {
                 break;
             }
         }
-//        System.out.println("_____");
-//        for (String i : pressedButtonsQueue) {
-//            System.out.println(i);
-//        }
     }
 
     public ArrayList<String> getPressedButtonsQueue() {
@@ -47,5 +43,6 @@ public class KeyHandler implements KeyListener {
         activeButtons.add(KeyEvent.VK_S);
         activeButtons.add(KeyEvent.VK_D);
         activeButtons.add(KeyEvent.VK_A);
+        activeButtons.add(KeyEvent.VK_SPACE);
     }
 }

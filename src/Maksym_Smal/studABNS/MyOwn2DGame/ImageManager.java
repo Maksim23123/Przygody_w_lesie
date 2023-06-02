@@ -30,16 +30,58 @@ public class ImageManager {
         try {
             this.addImage(new Image(ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/gray_boxes/goblin.png"))), "regularGoblinUp1"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
             this.addImage(new Image(ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/health_bar/healthbar_big_background.png"))), "healthBBg"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
             this.addImage(new Image(ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/health_bar/healthbar_litle_background.png"))), "healthSBg"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
             this.addImage(new Image(ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/health_bar/healthbar.png"))), "healthbar"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
             this.addImage(new Image(ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/gui/gray_boxes/Sword.png"))), "sword"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                    getResourceAsStream("/weapon/sword.png"))), "sword"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.addImage(new Image(ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/weapon/bow.png"))), "bow"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.addImage(new Image(ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/weapon/projectiles/arrow.png"))), "arrow"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
 }

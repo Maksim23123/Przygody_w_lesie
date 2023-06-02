@@ -1,5 +1,7 @@
 package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
+import Maksym_Smal.studABNS.MyOwn2DGame.Random;
+
 public class AttributeManager {
 
     public int speed;
@@ -41,17 +43,17 @@ public class AttributeManager {
     }
 
     void setRandomAttributes(int level) {
-        setAttackCooldown(20 - getRandomInt(5, true) * level);
+        setAttackCooldown(20 - Random.getRandomInt(5, true) * level);
 
-        setDamage(2 * (level - 1) + getRandomInt(5, false));
+        setDamage(2 * (level - 1) + Random.getRandomInt(5, true));
 
-        setSpeed(6 + getRandomInt(4, false));
+        setSpeed(6 + Random.getRandomInt(4, false));
 
-        setMaxHealth(10 * (level - 1) + getRandomInt(20, false));
+        setMaxHealth(10 * (level - 1) + Random.getRandomInt(20, false));
         setHealth(maxHealth, false);
 
         setAttackRange(30);
-        setAttackFarRange(48 * (2 + getRandomInt(3, false)));
+        setAttackFarRange(48 * (2 + Random.getRandomInt(3, false)));
     }
 
     public void setMaxHealth(int maxHealth) {
@@ -61,6 +63,10 @@ public class AttributeManager {
         else {
             this.maxHealth = 1;
         }
+    }
+
+    public int getAttackCooldown() {
+        return attackCooldown;
     }
 
     public int getAttackRange() {
@@ -110,11 +116,11 @@ public class AttributeManager {
         return health;
     }
 
-    int getOutputDamage() {
+    public int getOutputDamage() {
         return (int)(damage * damageMultiple);
     }
 
-    void dealDamage(int inputDamage) {
+    public void dealDamage(int inputDamage) {
         this.inputDamage += inputDamage;
     }
 
@@ -137,13 +143,5 @@ public class AttributeManager {
 
     public int getMaxHealth() {
         return maxHealth;
-    }
-
-    private int getRandomInt(int range, boolean notNull) {
-        int result = (int) (Math.random() / (1f / (float)range));
-        if (result == 0 && notNull) {
-            result = getRandomInt(range, notNull);
-        }
-        return result;
     }
 }

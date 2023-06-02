@@ -3,6 +3,7 @@ package Maksym_Smal.studABNS.MyOwn2DGame;
 import Maksym_Smal.studABNS.MyOwn2DGame.entity.Enemy;
 import Maksym_Smal.studABNS.MyOwn2DGame.entity.Entity;
 import Maksym_Smal.studABNS.MyOwn2DGame.tile.TileManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.Projectile;
 
 public class CollisionChecker {
 
@@ -12,6 +13,91 @@ public class CollisionChecker {
 
         this.gamePanel = gamePanel;
     }
+
+    public boolean testStackInWall(Projectile projectile) {
+        boolean result = true;
+        int row = projectile.getWorldX() / gamePanel.tileSize;
+        int col = projectile.getWorldY() / gamePanel.tileSize;
+        TileManager tileManager = gamePanel.tileManager;
+
+        if ((row >= 0 && col >= 0) && (col < gamePanel.maxWorldCol && row < gamePanel.maxWorldRow) &&
+                tileManager.tiles[tileManager.mapTileNumber[col][row]].
+                        projectileCollision) {
+
+            result = false;
+        }
+        return result;
+    }
+
+    public boolean testMotionWithIgnoringEntities(Entity entity, int motionX, int motionY) {
+        boolean result = true;
+        TileManager tileManager = gamePanel.tileManager;
+
+        if (motionX == 0 && motionY == 0) {
+            int topRow = entity.hitBox.getEntityTopRow();
+            int bottomRow = entity.hitBox.getEntityBottomRow();
+            int nextHorizontalRow = entity.hitBox.getEntityRightWorldX() / gamePanel.tileSize;
+            if (nextHorizontalRow >= 0 && (tileManager.tiles[tileManager.mapTileNumber[nextHorizontalRow][topRow]].
+                    collision || tileManager.tiles[tileManager.mapTileNumber[nextHorizontalRow][bottomRow]].collision)){
+                result = false;
+                entity.setStackInWall(true);
+            }
+
+            int rightCol = entity.hitBox.getEntityRightCol();
+            int leftCol = entity.hitBox.getEntityLeftCol();
+            int nextVerticalRow = (entity.hitBox.getEntityTopWorldY()) / gamePanel.tileSize;
+            if (nextVerticalRow >= 0 &&
+                    (tileManager.tiles[tileManager.mapTileNumber[rightCol][nextVerticalRow]].collision ||
+                            tileManager.tiles[tileManager.mapTileNumber[leftCol][nextVerticalRow]].collision)){
+                result = false;
+                entity.setStackInWall(true);
+            }
+        }
+
+        if (motionX > 0) {
+            int topRow = entity.hitBox.getEntityTopRow();
+            int bottomRow = entity.hitBox.getEntityBottomRow();
+            int nextHorizontalRow = (entity.hitBox.getEntityRightWorldX() + motionX) / gamePanel.tileSize;
+            if (nextHorizontalRow >= 0 && (tileManager.tiles[tileManager.mapTileNumber[nextHorizontalRow][topRow]].
+                    collision || tileManager.tiles[tileManager.mapTileNumber[nextHorizontalRow][bottomRow]].collision)){
+                result = false;
+            }
+        }
+        if (motionX < 0) {
+            int topRow = entity.hitBox.getEntityTopRow();
+            int bottomRow = entity.hitBox.getEntityBottomRow();
+            int nextHorizontalRow = (entity.hitBox.getEntityLeftWorldX() + motionX) / gamePanel.tileSize;
+            if (nextHorizontalRow >= 0 && (tileManager.tiles[tileManager.mapTileNumber[nextHorizontalRow][topRow]].
+                    collision || tileManager.tiles[tileManager.mapTileNumber[nextHorizontalRow][bottomRow]].collision)){
+                result = false;
+            }
+        }
+        //-----
+        if (motionY < 0) {
+            int rightCol = entity.hitBox.getEntityRightCol();
+            int leftCol = entity.hitBox.getEntityLeftCol();
+            int nextVerticalRow = (entity.hitBox.getEntityTopWorldY() + motionY) / gamePanel.tileSize;
+            if (nextVerticalRow >= 0 &&
+                    (tileManager.tiles[tileManager.mapTileNumber[rightCol][nextVerticalRow]].collision ||
+                            tileManager.tiles[tileManager.mapTileNumber[leftCol][nextVerticalRow]].collision)){
+                result = false;
+            }
+        }
+
+        if (motionY > 0) {
+            int rightCol = entity.hitBox.getEntityRightCol();
+            int leftCol = entity.hitBox.getEntityLeftCol();
+            int nextVerticalRow = (entity.hitBox.getEntityBottomWorldY() + motionY) / gamePanel.tileSize;
+            if (nextVerticalRow >= 0 &&
+                    (tileManager.tiles[tileManager.mapTileNumber[rightCol][nextVerticalRow]].collision ||
+                            tileManager.tiles[tileManager.mapTileNumber[leftCol][nextVerticalRow]].collision)){
+                result = false;
+            }
+        }
+
+        return result;
+    }
+
 
     public boolean testMotion(Entity entity, int motionX, int motionY) {
         boolean result = true;

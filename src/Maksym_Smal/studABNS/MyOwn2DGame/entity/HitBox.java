@@ -17,6 +17,9 @@ public class HitBox {
     int entityTopRow;
     int entityBottomRow;
 
+    int centerX;
+    int centerY;
+
     HitBox(GamePanel gamePanel, Entity entity) {
         this.gamePanel = gamePanel;
         this.entity = entity;
@@ -30,6 +33,9 @@ public class HitBox {
         entityRightCol = entityRightWorldX / gamePanel.tileSize;
         entityTopRow = entityTopWorldY / gamePanel.tileSize;
         entityBottomRow = entityBottomWorldY / gamePanel.tileSize;
+
+        centerX = entity.worldX + (entity.sizeX / 2);
+        centerY = entity.worldY + (entity.sizeY / 2);
     }
 
     public void update(){
@@ -42,6 +48,17 @@ public class HitBox {
         entityRightCol = entityRightWorldX / gamePanel.tileSize;
         entityTopRow = entityTopWorldY / gamePanel.tileSize;
         entityBottomRow = entityBottomWorldY / gamePanel.tileSize;
+
+        centerX = entity.worldX + (entity.sizeX / 2);
+        centerY = entity.worldY + (entity.sizeY / 2);
+    }
+
+    public int getCenterX() {
+        return centerX;
+    }
+
+    public int getCenterY() {
+        return centerY;
     }
 
     public int getEntityLeftWorldX() {

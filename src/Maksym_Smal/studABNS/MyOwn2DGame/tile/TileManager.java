@@ -30,6 +30,50 @@ public class TileManager {
         mapTileNumber = new int[90][90];
     }
 
+    public void closeRoom() {
+        mapTileNumber[30][46] = 1;
+        mapTileNumber[30][45] = 1;
+        mapTileNumber[30][44] = 1;
+        mapTileNumber[30][43] = 1;
+
+        mapTileNumber[60][46] = 1;
+        mapTileNumber[60][45] = 1;
+        mapTileNumber[60][44] = 1;
+        mapTileNumber[60][43] = 1;
+
+        mapTileNumber[46][30] = 1;
+        mapTileNumber[45][30] = 1;
+        mapTileNumber[44][30] = 1;
+        mapTileNumber[43][30] = 1;
+
+        mapTileNumber[46][60] = 1;
+        mapTileNumber[45][60] = 1;
+        mapTileNumber[44][60] = 1;
+        mapTileNumber[43][60] = 1;
+    }
+
+    public void openRoom() {
+        mapTileNumber[30][46] = 0;
+        mapTileNumber[30][45] = 0;
+        mapTileNumber[30][44] = 0;
+        mapTileNumber[30][43] = 0;
+
+        mapTileNumber[60][46] = 0;
+        mapTileNumber[60][45] = 0;
+        mapTileNumber[60][44] = 0;
+        mapTileNumber[60][43] = 0;
+
+        mapTileNumber[46][30] = 0;
+        mapTileNumber[45][30] = 0;
+        mapTileNumber[44][30] = 0;
+        mapTileNumber[43][30] = 0;
+
+        mapTileNumber[46][60] = 0;
+        mapTileNumber[45][60] = 0;
+        mapTileNumber[44][60] = 0;
+        mapTileNumber[43][60] = 0;
+    }
+
     public void updateTileMap() throws IOException {
         gamePanel.roomHandler.resetUses();
         Player player = gamePanel.player;
@@ -39,8 +83,6 @@ public class TileManager {
                 mapTileNumber[30 + j][30 + i] = tileMap[j][i];
             }
         }
-
-
 
         if (!gamePanel.roomHandler.testExplored(player.getRoomIndexX(), player.getRoomIndexY())) {
             gamePanel.roomHandler.loadEnemies();
@@ -192,6 +234,7 @@ public class TileManager {
             tiles[1] = new Tile();
             tiles[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
             tiles[1].collision = true;
+            tiles[1].projectileCollision = true;
 
             tiles[2] = new Tile();
             tiles[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/water.png"));
@@ -203,6 +246,7 @@ public class TileManager {
             tiles[4] = new Tile();
             tiles[4].image = ImageIO.read(getClass().getResourceAsStream("/tiles/tree.png"));
             tiles[4].collision = true;
+            tiles[4].projectileCollision = true;
 
             tiles[5] = new Tile();
             tiles[5].image = ImageIO.read(getClass().getResourceAsStream("/tiles/sand.png"));

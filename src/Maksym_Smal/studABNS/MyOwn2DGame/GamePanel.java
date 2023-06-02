@@ -7,6 +7,7 @@ import Maksym_Smal.studABNS.MyOwn2DGame.menu.MainMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.Menu;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.SavesMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.tile.TileManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.ProjectileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.VisualOutputManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.world.RoomHandler;
 
@@ -44,6 +45,8 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
     KeyHandler keyHandler = new KeyHandler();
     DeltaTime deltaTime = new DeltaTime(FPS);
+
+    public ImageManager imageManager = new ImageManager();
     public Player player = new Player(this, keyHandler);
     TileManager tileManager = new TileManager(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
@@ -58,9 +61,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     public RoomHandler roomHandler = new RoomHandler(this);
 
-    public ImageManager imageManager = new ImageManager();
-
     public VisualOutputManager visualOutputManager = new VisualOutputManager(this);
+
+    public ProjectileManager projectileManager = new ProjectileManager(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -119,7 +122,7 @@ public class GamePanel extends JPanel implements Runnable {
 //                            System.out.println( "----\n" + enemyManager.getEnemies().
 //                                    get(0).attributeManager.showAttributes());
 //                        }
-                        System.out.println(player.attributeManager.getHealth());
+
 
                         // 1 UPDATE: update information such as character positions
                         update();
@@ -138,6 +141,14 @@ public class GamePanel extends JPanel implements Runnable {
         screenWidth = getWidth();
         enemyManager.update();
         player.update();
+        projectileManager.update();
+
+        if (!enemyManager.getEnemies().isEmpty()) {
+            tileManager.closeRoom();
+        }
+        else {
+            tileManager.openRoom();
+        }
     }
 
     public void paintComponent(Graphics g){
@@ -154,6 +165,7 @@ public class GamePanel extends JPanel implements Runnable {
 //                goblin.draw(g2);
                 enemyManager.draw(g2);
                 player.draw(g2);
+                projectileManager.draw(g2);
                 player.weapon.draw(g2);
                 visualOutputManager.draw(g2);
                 break;

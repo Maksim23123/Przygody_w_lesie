@@ -6,6 +6,14 @@ import java.awt.*;
 
 public abstract class Enemy extends Entity{
 
+    int targetCordX;
+    int targetCordY;
+
+    int confusionTime;
+
+    int screenX;
+    int screenY;
+
     boolean moving;
 
     private boolean updated = false;

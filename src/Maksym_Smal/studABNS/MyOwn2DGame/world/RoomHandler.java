@@ -23,12 +23,7 @@ public class RoomHandler {
     }
 
     public boolean testExplored(int indexX, int indexY) {
-        if (exploredRooms[indexX][indexY]) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return exploredRooms[indexX][indexY];
     }
 
     public void setExplored(int indexX, int indexY, boolean value) {

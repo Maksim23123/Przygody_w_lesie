@@ -59,6 +59,7 @@ public class SavesMenu extends Menu{
 
             }
             gamePanel.player.setDefaultValues(roomIndexX, roomIndexY);
+            gamePanel.roomHandler.setExplored(roomIndexX, roomIndexY, true);
 
             gamePanel.updateTileMap();
         }

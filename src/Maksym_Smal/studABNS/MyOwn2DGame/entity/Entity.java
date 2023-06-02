@@ -27,6 +27,9 @@ public abstract class Entity {
 
     GamePanel gamePanel;
 
+    int sizeX = 64;
+    int sizeY = 64;
+
     public AttributeManager attributeManager = new AttributeManager();
 
     public void setPushAwaySpeed(int pushAwaySpeed) {

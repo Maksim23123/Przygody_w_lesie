@@ -1,6 +1,7 @@
 package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
+import Maksym_Smal.studABNS.MyOwn2DGame.Random;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -22,20 +23,23 @@ public class EnemyManager {
     public void generateEnemies(int count) {
 
 
-        for (int i = 0; i < count; i++) {
-            int cordX = (getRandomPosInt(20) + 35) * gamePanel.tileSize;
-            int cordY = (getRandomPosInt(20) + 35) * gamePanel.tileSize;
+        for (int i = 0; i < count / 2; i++) {
+            int cordX = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
+            int cordY = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
 
             Enemy enemy = new Goblin(gamePanel);
-            enemy.setDefaultValues();
-            enemy.attributeManager.setRandomAttributes(1);
             enemy.setPosition(cordX, cordY);
             enemies.add(enemy);
         }
-    }
 
-    private int getRandomPosInt(int range) {
-        return (int) (Math.random() / (1f / (float)range));
+        for (int i = 0; i < count / 2; i++) {
+            int cordX = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
+            int cordY = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
+
+            Enemy enemy = new GoblinArcher(gamePanel);
+            enemy.setPosition(cordX, cordY);
+            enemies.add(enemy);
+        }
     }
 
     public void draw(Graphics2D g2) {
