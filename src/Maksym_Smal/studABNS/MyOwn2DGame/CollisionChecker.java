@@ -23,7 +23,6 @@ public class CollisionChecker {
         if ((row >= 0 && col >= 0) && (col < gamePanel.maxWorldCol && row < gamePanel.maxWorldRow) &&
                 tileManager.tiles[tileManager.mapTileNumber[col][row]].
                         projectileCollision) {
-
             result = false;
         }
         return result;

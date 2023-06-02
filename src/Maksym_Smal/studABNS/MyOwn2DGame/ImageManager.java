@@ -82,6 +82,14 @@ public class ImageManager {
         catch (IOException e) {
             e.printStackTrace();
         }
+
+        try {
+            this.addImage(new Image(ImageIO.read(Objects.requireNonNull(getClass().
+                    getResourceAsStream("/weapon/staff.png"))), "staff"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

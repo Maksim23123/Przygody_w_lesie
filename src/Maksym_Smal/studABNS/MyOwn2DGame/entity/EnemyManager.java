@@ -23,7 +23,7 @@ public class EnemyManager {
     public void generateEnemies(int count) {
 
 
-        for (int i = 0; i < count / 2; i++) {
+        for (int i = 0; i < count / 3; i++) {
             int cordX = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
             int cordY = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
 
@@ -32,11 +32,20 @@ public class EnemyManager {
             enemies.add(enemy);
         }
 
-        for (int i = 0; i < count / 2; i++) {
+        for (int i = 0; i < count / 3; i++) {
             int cordX = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
             int cordY = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
 
             Enemy enemy = new GoblinArcher(gamePanel);
+            enemy.setPosition(cordX, cordY);
+            enemies.add(enemy);
+        }
+
+        for (int i = 0; i < count / 3; i++) {
+            int cordX = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
+            int cordY = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
+
+            Enemy enemy = new GoblinSupport(gamePanel);
             enemy.setPosition(cordX, cordY);
             enemies.add(enemy);
         }
