@@ -10,28 +10,51 @@ public class RoomHandler {
     GamePanel gamePanel;
     ArrayList<Room> rooms = new ArrayList<>();
 
-    boolean[][] exploredRooms = new boolean[10][10] ;
+    boolean[][] exploreMap = new boolean[10][10];
+
+    int exploredRoomsCount = 1;
 
     public RoomHandler(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
 
-        for (int i = 0; i < exploredRooms.length; i++ ) {
-            for (int j = 0; j < exploredRooms.length; j++) {
-                exploredRooms[i][j] = false;
+        for (int i = 0; i < exploreMap.length; i++ ) {
+            for (int j = 0; j < exploreMap.length; j++) {
+                exploreMap[i][j] = false;
             }
         }
     }
 
     public boolean testExplored(int indexX, int indexY) {
-        return exploredRooms[indexX][indexY];
+        return exploreMap[indexX][indexY];
+    }
+
+    public void setExploreMap(boolean[][] exploreMap) {
+        this.exploreMap = exploreMap;
+    }
+
+    public int getExploredRoomsCount() {
+        exploredRoomsCount = 0;
+        for (boolean[] i : exploreMap) {
+            for (boolean j : i) {
+                if (j) {
+                    exploredRoomsCount++;
+                }
+            }
+        }
+        return exploredRoomsCount;
+    }
+
+    public boolean[][] getExploreMap() {
+        return exploreMap;
     }
 
     public void setExplored(int indexX, int indexY, boolean value) {
-        this.exploredRooms[indexX][indexY] = value;
+        this.exploreMap[indexX][indexY] = value;
+        gamePanel.visualOutputManager.getMiniMap().updateUnknownRooms();
     }
 
     public void loadEnemies() {
-        gamePanel.enemyManager.generateEnemies(10);
+        gamePanel.enemyManager.generateEnemies(getExploredRoomsCount());
     }
 
 

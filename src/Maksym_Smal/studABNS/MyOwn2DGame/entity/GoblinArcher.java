@@ -13,10 +13,12 @@ public class GoblinArcher extends Enemy {
 
     int confusionTime;
 
-    public GoblinArcher(GamePanel gamePanel) {
+    public GoblinArcher(GamePanel gamePanel, int lvl) {
         super(gamePanel);
 
         confusionTime = 30;
+
+        attributeManager.setRandomAttributes(lvl);
 
         setDefaultValues();
     }
@@ -28,7 +30,6 @@ public class GoblinArcher extends Enemy {
         setPosition(45  * gamePanel.tileSize, 45  * gamePanel.tileSize);
         direction = "down";
         weapon = new Weapon(gamePanel , gamePanel.imageManager.getImageByTag("bow"));
-        attributeManager.setRandomAttributes(1);
 
         attributeManager.setAttackCooldown(30 + 30 * Random.getRandomInt(4, true) +
                 attributeManager.getAttackCooldown());
@@ -103,10 +104,12 @@ public class GoblinArcher extends Enemy {
         g2.drawImage(gamePanel.imageManager.getImageByTag("healthSBg"), screenX + gamePanel.tileSize / 6 + 2,
                 screenY - gamePanel.tileSize / 3 + 2,
                 gamePanel.tileSize / 6 * 4 - 4, gamePanel.tileSize / 6 - 4, null);
-        g2.drawImage(gamePanel.imageManager.getImageByTag("healthbar"), screenX + gamePanel.tileSize / 6 + 2,
-                screenY - gamePanel.tileSize / 3 + 2,
-                (gamePanel.tileSize / 6 * 4 - 4) * attributeManager.getHealth() / attributeManager.getMaxHealth(),
-                gamePanel.tileSize / 6 - 4, null);
+        if (attributeManager.getHealth() >= 0) {
+            g2.drawImage(gamePanel.imageManager.getImageByTag("healthbar"), screenX + gamePanel.tileSize / 6 + 2,
+                    screenY - gamePanel.tileSize / 3 + 2,
+                    (gamePanel.tileSize / 6 * 4 - 4) * attributeManager.getHealth() / attributeManager.getMaxHealth(),
+                    gamePanel.tileSize / 6 - 4, null);
+        }
     }
 
     private void updateWeapon() {
@@ -132,8 +135,8 @@ public class GoblinArcher extends Enemy {
         if (targetDistance < gamePanel.tileSize * 10 && weaponReloadTimer == 0 &&
                 confusionTime <= 0) {
             weaponReloadTimer = attributeManager.attackCooldown;
-            gamePanel.projectileManager.createProjectile(worldX, worldY, targetCordX, targetCordY, 15,
-                    gamePanel.imageManager.getImageByTag("arrow"), this);
+            gamePanel.projectileManager.createProjectile(worldX, worldY, targetCordX,
+                    targetCordY, 15, gamePanel.imageManager.getImageByTag("arrow"), this);
         }
 
         if (weaponReloadTimer > 0) {

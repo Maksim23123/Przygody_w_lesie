@@ -13,10 +13,12 @@ public class GoblinSupport extends Enemy {
 
     int confusionTime;
 
-    public GoblinSupport(GamePanel gamePanel) {
+    public GoblinSupport(GamePanel gamePanel, int lvl) {
         super(gamePanel);
 
         confusionTime = 30;
+
+        attributeManager.setRandomAttributes(lvl);
 
         setDefaultValues();
     }
@@ -28,7 +30,7 @@ public class GoblinSupport extends Enemy {
         setPosition(45  * gamePanel.tileSize, 45  * gamePanel.tileSize);
         direction = "down";
         weapon = new Weapon(gamePanel , gamePanel.imageManager.getImageByTag("staff"));
-        attributeManager.setRandomAttributes(1);
+
 
         attributeManager.setAttackCooldown(30 + 30 * Random.getRandomInt(4, true) +
                 attributeManager.getAttackCooldown());
@@ -46,11 +48,11 @@ public class GoblinSupport extends Enemy {
 
         double distance = Math.sqrt(Math.pow(worldX - targetCordX, 2) + Math.pow(worldY - targetCordY, 2));
 
-        if (distance < gamePanel.tileSize * 7) {
+        if (distance < gamePanel.tileSize * 5) {
             complementValue = -1;
             moving = true;
         }
-        else if (distance < gamePanel.tileSize * 9) {
+        else if (distance < gamePanel.tileSize * 7) {
             moving = false;
         }
         else {
@@ -103,10 +105,12 @@ public class GoblinSupport extends Enemy {
         g2.drawImage(gamePanel.imageManager.getImageByTag("healthSBg"), screenX + gamePanel.tileSize / 6 + 2,
                 screenY - gamePanel.tileSize / 3 + 2,
                 gamePanel.tileSize / 6 * 4 - 4, gamePanel.tileSize / 6 - 4, null);
-        g2.drawImage(gamePanel.imageManager.getImageByTag("healthbar"), screenX + gamePanel.tileSize / 6 + 2,
-                screenY - gamePanel.tileSize / 3 + 2,
-                (gamePanel.tileSize / 6 * 4 - 4) * attributeManager.getHealth() / attributeManager.getMaxHealth(),
-                gamePanel.tileSize / 6 - 4, null);
+        if (attributeManager.getHealth() >= 0) {
+            g2.drawImage(gamePanel.imageManager.getImageByTag("healthbar"), screenX + gamePanel.tileSize / 6 + 2,
+                    screenY - gamePanel.tileSize / 3 + 2,
+                    (gamePanel.tileSize / 6 * 4 - 4) * attributeManager.getHealth() / attributeManager.getMaxHealth(),
+                    gamePanel.tileSize / 6 - 4, null);
+        }
     }
 
     private void updateWeapon() {
@@ -129,12 +133,26 @@ public class GoblinSupport extends Enemy {
             angle = 180 - angle;
         }
 
-//        if (targetDistance < gamePanel.tileSize * 10 && weaponReloadTimer == 0 &&
-//                confusionTime <= 0) {
-//            weaponReloadTimer = attributeManager.attackCooldown;
-//            gamePanel.projectileManager.createProjectile(worldX, worldY, targetCordX, targetCordY, 15,
-//                    gamePanel.imageManager.getImageByTag("arrow"), this);
-//        }
+        if (targetDistance < gamePanel.tileSize * 8 && weaponReloadTimer == 0 &&
+                confusionTime <= 0) {
+            weaponReloadTimer = attributeManager.attackCooldown;
+            int number = Random.getRandomInt(3, false);
+            AttributeModifier attributeModifier = new AttributeModifier();
+            attributeModifier.setInfinity(false);
+            attributeModifier.setPermanent(false);
+            attributeModifier.setDuration(attributeManager.getAttackCooldown() - 5);
+            if (number == 0) {
+                attributeModifier.setSpeed(-2);
+            }
+            else if (number == 1) {
+                attributeModifier.setInputDamageMultiple(0.1);
+            }
+            else if (number == 2) {
+                attributeModifier.setAttackCooldown(10);
+            }
+            gamePanel.player.attributeModifiers.add(attributeModifier);
+
+        }
 
         if (weaponReloadTimer > 0) {
             weaponReloadTimer--;

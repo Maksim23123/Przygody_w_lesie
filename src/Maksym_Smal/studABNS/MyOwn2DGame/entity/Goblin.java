@@ -2,6 +2,7 @@ package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 import Maksym_Smal.studABNS.MyOwn2DGame.Random;
+import Maksym_Smal.studABNS.MyOwn2DGame.items.LootTable;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.Weapon;
 
 import java.awt.*;
@@ -17,13 +18,18 @@ public class Goblin extends Enemy {
     int weaponIncreaseValue = 45;
     int weaponReloadTimer = 0;
 
-    public Goblin(GamePanel gamePanel) {
+
+
+    public Goblin(GamePanel gamePanel, int lvl) {
         super(gamePanel);
 
         confusionTime = 30;
 
+        attributeManager.setRandomAttributes(lvl);
+
         setDefaultValues();
     }
+
 
     @Override
     public void setPosition(int cordX, int cordY) {
@@ -38,7 +44,7 @@ public class Goblin extends Enemy {
         setPosition(45  * gamePanel.tileSize, 45  * gamePanel.tileSize);
         direction = "down";
         weapon = new Weapon(gamePanel , gamePanel.imageManager.getImageByTag("sword"));
-        attributeManager.setRandomAttributes(1);
+
     }
 
     @Override
@@ -96,10 +102,12 @@ public class Goblin extends Enemy {
         g2.drawImage(gamePanel.imageManager.getImageByTag("healthSBg"), screenX + gamePanel.tileSize / 6 + 2,
                 screenY - gamePanel.tileSize / 3 + 2,
                 gamePanel.tileSize / 6 * 4 - 4, gamePanel.tileSize / 6 - 4, null);
-        g2.drawImage(gamePanel.imageManager.getImageByTag("healthbar"), screenX + gamePanel.tileSize / 6 + 2,
-                screenY - gamePanel.tileSize / 3 + 2,
-                (gamePanel.tileSize / 6 * 4 - 4) * attributeManager.getHealth() / attributeManager.getMaxHealth(),
-                gamePanel.tileSize / 6 - 4, null);
+        if (attributeManager.getHealth() >= 0) {
+            g2.drawImage(gamePanel.imageManager.getImageByTag("healthbar"), screenX + gamePanel.tileSize / 6 + 2,
+                    screenY - gamePanel.tileSize / 3 + 2,
+                    (gamePanel.tileSize / 6 * 4 - 4) * attributeManager.getHealth() / attributeManager.getMaxHealth(),
+                    gamePanel.tileSize / 6 - 4, null);
+        }
     }
 
     private void updateWeapon() {
@@ -127,6 +135,7 @@ public class Goblin extends Enemy {
             weaponMoving = true;
             weaponReloadTimer = attributeManager.attackCooldown;
             if (gamePanel.player.getRollingTime() == 0) {
+                gamePanel.soundManager.playSound(1);
                 gamePanel.player.attributeManager.dealDamage(attributeManager.getOutputDamage());
                 gamePanel.player.pushAway(worldX, worldY, 15, 5);
             }

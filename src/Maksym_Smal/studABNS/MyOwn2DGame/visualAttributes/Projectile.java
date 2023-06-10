@@ -90,6 +90,7 @@ public class Projectile {
                 Math.pow(worldY - gamePanel.player.worldY, 2));
 
         if (distance < 48 && gamePanel.player.getRollingTime() == 0 ) {
+            gamePanel.soundManager.playSound(1);
             gamePanel.player.attributeManager.dealDamage(owner.attributeManager.getOutputDamage());
             gamePanel.player.pushAway(startPointX, startPointY, 15, 5);
             mustBeDeleted = true;

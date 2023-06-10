@@ -4,6 +4,7 @@ import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 import Maksym_Smal.studABNS.MyOwn2DGame.world.MazeGenerator;
 import Maksym_Smal.studABNS.MyOwn2DGame.world.RoomGenerator;
 
+import javax.swing.*;
 import java.io.*;
 
 
@@ -12,9 +13,13 @@ public class FileManager {
 
     String filePath;
 
-    int[][] mazeMap;
+    int[][] mazeMap = new int[10][10];;
+
+    boolean[][] exploreMap = new boolean[10][10];;
 
     GamePanel gamePanel;
+
+    PlayerData playerData;
 
 
     public FileManager(String path, GamePanel gamePanel) {
@@ -25,7 +30,6 @@ public class FileManager {
 
 //        MazeGenerator mazeGenerator = new MazeGenerator(9, 10);
 //
-        mazeMap = new int[10][10];
 //
 //        makeSave();
     }
@@ -39,26 +43,70 @@ public class FileManager {
         return mazeMap;
     }
 
-    public void loadSave() {
+    public boolean[][] getExploreMap() {
+        return exploreMap;
+    }
 
-        try (DataInputStream inputStream = new DataInputStream(new FileInputStream(filePath + "/mazeMap.bin"))) {
-            // Зчитування даних з бінарного файлу
-            for (int i = 0; i < mazeMap[0].length; i++) {
-                for (int j = 0; j < mazeMap.length; j++) {
-                    mazeMap[i][j] = inputStream.readInt();
+    public boolean loadSave() {
+        boolean result = true;
+
+        if (checkSaveExist()) {
+            try (DataInputStream inputStream = new DataInputStream(
+                    new FileInputStream(filePath + "/mazeMap.bin"))) {
+
+                for (int i = 0; i < mazeMap[0].length; i++) {
+                    for (int j = 0; j < mazeMap.length; j++) {
+                        mazeMap[i][j] = inputStream.readInt();
+                    }
                 }
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            try (DataInputStream inputStream = new DataInputStream(
+                    new FileInputStream(filePath + "/exploreMap.bin"))) {
+                for (int i = 0; i < exploreMap[0].length; i++) {
+                    for (int j = 0; j < exploreMap.length; j++) {
+                        exploreMap[i][j] = inputStream.readBoolean();
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        else {
+            result = false;
+        }
+
 
 //        MazeGenerator mazeGenerator = new MazeGenerator(10, 10);
 //
 //        mazeGenerator.setMap(mazeMap);
 //
 //        System.out.println(mazeGenerator.getOutput());
+        return result;
+    }
 
+    public void writeExploreMap(boolean[][] exploreMap) {
+        String path = filePath + "/exploreMap.bin";
+        try (DataOutputStream outputStream = new DataOutputStream(
+                new FileOutputStream(path))) {
+            for (boolean[] row : exploreMap) {
+                for (boolean item : row) {
+                    if (item) {
+                        outputStream.writeBoolean(true);
+                    }
+                    else {
+                        outputStream.writeBoolean(false);
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public int[][] loadOrGenerateRoom(int indexX, int indexY) throws IOException {
@@ -102,6 +150,53 @@ public class FileManager {
         return room;
     }
 
+    public void writePlayerData(PlayerData playerData) {
+        try {
+            FileOutputStream fileOut = new FileOutputStream(filePath + "/playerData.bin");
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(playerData);
+            objectOut.close();
+            fileOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean checkSaveExist() {
+        boolean result = true;
+        if (!gamePanel.fileManager.isExist(filePath + "/mazeMap.bin")) {
+            result = false;
+        }
+
+        if (!gamePanel.fileManager.isExist(filePath + "/playerData.bin")) {
+            result = false;
+        }
+
+        if (!gamePanel.fileManager.isExist(filePath + "/exploreMap.bin")) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    public PlayerData loadPlayerData() {
+        if (playerData != null) {
+            return playerData;
+        }
+        else {
+            try {
+                FileInputStream fileIn = new FileInputStream(filePath + "/playerData.bin");
+                ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+                playerData = (PlayerData)objectIn.readObject();
+                objectIn.close();
+                fileIn.close();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return playerData;
+        }
+    }
+
     void makeSave() {
 
         for (int i = 0; i < mazeMap.length; i++) {
@@ -128,8 +223,11 @@ public class FileManager {
     }
 
     public void generateNewSave() throws IOException {
+        File file = new File(filePath);
+        file.mkdirs();
+
         MazeGenerator mazeGenerator = new MazeGenerator(10, 10);
-        File file = new File(filePath + "/mazeMap.bin");
+        file = new File(filePath + "/mazeMap.bin");
         if (!file.exists()) {
             file.createNewFile();
         }

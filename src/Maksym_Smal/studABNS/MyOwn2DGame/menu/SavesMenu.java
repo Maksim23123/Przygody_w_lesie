@@ -25,19 +25,19 @@ public class SavesMenu extends Menu{
     @Override
     public void update() {
         if (checkHover(save1Button)) {
-            if (gamePanel.mouseHandler.getClicked()) {
+            if (gamePanel.mouseHandler.getClicked("mouse1")) {
                 startSave("saves/save1");
             }
         }
 
         if (checkHover(save2Button)) {
-            if (gamePanel.mouseHandler.getClicked()) {
+            if (gamePanel.mouseHandler.getClicked("mouse1")) {
                 startSave("saves/save2");
             }
         }
 
         if (checkHover(save3Button)) {
-            if (gamePanel.mouseHandler.getClicked()) {
+            if (gamePanel.mouseHandler.getClicked("mouse1")) {
                 startSave("saves/save3");
             }
         }
@@ -45,26 +45,18 @@ public class SavesMenu extends Menu{
 
     void startSave(String path) {
         gamePanel.fileManager = new FileManager(path, gamePanel);
-        if (gamePanel.fileManager.isExist(path + "/mazeMap.bin")) {
+        if (gamePanel.fileManager.checkSaveExist()) {
             gamePanel.fileManager.loadSave();
-            int roomIndexX = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap()[0].length) /
-                    gamePanel.fileManager.getMazeMap()[0].length);
-            int roomIndexY = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap().length) /
-                    gamePanel.fileManager.getMazeMap().length);
-            while (gamePanel.fileManager.getMazeMap()[roomIndexX][roomIndexY] == -1) {
-                roomIndexX = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap()[0].length) /
-                        gamePanel.fileManager.getMazeMap()[0].length);
-                roomIndexY = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap().length) /
-                        gamePanel.fileManager.getMazeMap().length);
-
-            }
-            gamePanel.player.setDefaultValues(roomIndexX, roomIndexY);
-            gamePanel.roomHandler.setExplored(roomIndexX, roomIndexY, true);
+            gamePanel.roomHandler.setExploreMap(gamePanel.fileManager.getExploreMap());
+            gamePanel.player.loadData(gamePanel.fileManager.loadPlayerData());
+            gamePanel.roomHandler.setExplored(gamePanel.player.getRoomIndexX(),
+                    gamePanel.player.getRoomIndexY(), true);
 
             gamePanel.updateTileMap();
         }
         else {
-            FileManager.deleteFolder(new File(path + "/rooms"));
+            FileManager.deleteFolder(new File(path));
+
             try {
                 gamePanel.fileManager.generateNewSave();
             } catch (IOException e) {
@@ -79,13 +71,19 @@ public class SavesMenu extends Menu{
                         gamePanel.fileManager.getMazeMap()[0].length);
                 roomIndexY = (int)(10 * (Math.random() * gamePanel.fileManager.getMazeMap().length) /
                         gamePanel.fileManager.getMazeMap().length);
-
             }
-            gamePanel.player.setDefaultValues(roomIndexX, roomIndexY);
 
+            boolean[][] explore = new boolean[10][10];
+
+            explore[roomIndexX][roomIndexY] = true;
+
+            gamePanel.roomHandler.setExploreMap(explore);
+            gamePanel.player.setDefaultValues(roomIndexX, roomIndexY);
+            gamePanel.fileManager.writePlayerData(gamePanel.player.getData());
             gamePanel.updateTileMap();
         }
         gamePanel.setGameState("gameLoop");
+        gamePanel.soundManager.setPlayBackground(true);
     }
 
     void defineButtons() {
@@ -111,8 +109,5 @@ public class SavesMenu extends Menu{
         catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
-
 }

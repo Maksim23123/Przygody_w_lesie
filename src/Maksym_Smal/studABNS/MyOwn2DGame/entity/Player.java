@@ -1,13 +1,17 @@
 package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
-import Maksym_Smal.studABNS.MyOwn2DGame.KeyHandler;
+import Maksym_Smal.studABNS.MyOwn2DGame.control.KeyHandler;
+import Maksym_Smal.studABNS.MyOwn2DGame.fileManager.PlayerData;
+import Maksym_Smal.studABNS.MyOwn2DGame.graphics.Animation;
+import Maksym_Smal.studABNS.MyOwn2DGame.graphics.AnimationManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.Weapon;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -35,6 +39,10 @@ public class Player extends Entity{
     int rollingTime = 0;
     int rollingCooldown = 0;
 
+    public ArrayList<AttributeModifier> attributeModifiers = new ArrayList<>();
+
+    private AnimationManager animationManager = new AnimationManager();
+
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
@@ -48,6 +56,8 @@ public class Player extends Entity{
         solidArea = new Rectangle(11, 22, 42, 42);
 
         hitBox = new HitBox(gamePanel, this);
+
+        direction = "down";
 
         getPlayerImage();
     }
@@ -77,41 +87,47 @@ public class Player extends Entity{
     }
 
     public void getPlayerImage() {
-        try {
-            up1 = ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/player/boy_up_1.png")));
-            up2 = ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/player/boy_up_2.png")));
-            down1 = ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/player/walk_down_1.png")));
-            down2 = ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/player/walk_down_2.png")));
-            left1 = ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/player/boy_left_1.png")));
-            left2 = ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/player/boy_left_2.png")));
-            right1 = ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/player/boy_right_1.png")));
-            right2 = ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/player/boy_right_2.png")));
-            weapon = new Weapon(gamePanel ,gamePanel.imageManager.getImageByTag("sword"));
+        Animation animation = new Animation("playerUp", 12, gamePanel);
+        animation.addImage("playerUp1");
+        animation.addImage("playerUp2");
+        animationManager.addAnimation(animation);
 
-        }
-        catch (IOException exception) {
-            exception.printStackTrace();
-        }
+        animation = new Animation("playerDown", 12, gamePanel);
+        animation.addImage("playerDown1");
+        animation.addImage("playerDown2");
+        animationManager.addAnimation(animation);
 
+        animationManager.setCurrentAnimation("playerDown");
+
+        animation = new Animation("playerLeft", 12, gamePanel);
+        animation.addImage("playerLeft1");
+        animation.addImage("playerLeft2");
+        animationManager.addAnimation(animation);
+
+        animation = new Animation("playerRight", 12, gamePanel);
+        animation.addImage("playerRight1");
+        animation.addImage("playerRight2");
+        animationManager.addAnimation(animation);
+
+        animation = new Animation("playerIdle", 12, gamePanel);
+        animation.addImage("playerIdle1");
+        animation.addImage("playerIdle2");
+        animationManager.addAnimation(animation);
+
+        weapon = new Weapon(gamePanel ,gamePanel.imageManager.getImageByTag("sword"));
     }
 
     public void setDefaultValues(int roomIndexX, int roomIndexY){
         worldX = gamePanel.tileSize * (gamePanel.maxWorldRow / 2);
         worldY = gamePanel.tileSize * (gamePanel.maxWorldCol / 2);
+
         System.out.println("RoomIndexX: " + roomIndexX);
         System.out.println("RoomIndexY: " + roomIndexY);
+
         this.roomIndexX = roomIndexX;
         this.roomIndexY = roomIndexY;
+
         attributeManager.speed = 9; //7
-        direction = "down";
 
         attributeManager.setDamage(2);
         attributeManager.setAttackCooldown(10);
@@ -119,6 +135,14 @@ public class Player extends Entity{
         attributeManager.setAttackFarRange(gamePanel.tileSize * 4);
         attributeManager.setMaxHealth(20);
         attributeManager.setHealth(attributeManager.getMaxHealth(), false);
+        attributeManager.setStartImmortalTime(30);
+
+        AttributeModifier attributeModifier = new AttributeModifier();
+        attributeModifier.setInfinity(true);
+        attributeModifier.setHealthIsRegenerating(true);
+        attributeModifiers.add(attributeModifier);
+
+        defaultAttributes = new AttributeManager(attributeManager);
     }
 
     public int getRoomIndexX() {
@@ -137,25 +161,34 @@ public class Player extends Entity{
 
         int distance = 50;
 
-        double mouseDistance = Math.sqrt(Math.pow(screenX - gamePanel.mouseHandler.getMousePosX(), 2) +
-                Math.pow(screenY - gamePanel.mouseHandler.getMousePosY(), 2));
 
-        double distanceY = Math.abs(screenY - gamePanel.mouseHandler.getMousePosY());
+
+
+//        System.out.println("1: " + mouseCordX);
+////        System.out.println("2: " + mouseCordY);
+
+        int cordX = screenX + gamePanel.tileSize / 2;
+        int cordY = screenY + gamePanel.tileSize / 2;
+
+        double mouseDistance = Math.sqrt(Math.pow(cordX - gamePanel.mouseHandler.getMousePosX(), 2) +
+                Math.pow(cordY - gamePanel.mouseHandler.getMousePosY(), 2));
+
+        double distanceY = Math.abs(cordY - gamePanel.mouseHandler.getMousePosY());
 
         double cosA = distanceY / mouseDistance;
         int angle = (int) Math.toDegrees(Math.acos(cosA));
 
-        if (screenX > gamePanel.mouseHandler.getMousePosX() && screenY > gamePanel.mouseHandler.getMousePosY()) {
+        if (cordX > gamePanel.mouseHandler.getMousePosX() && cordY > gamePanel.mouseHandler.getMousePosY()) {
             angle = 360 - angle;
         }
-        else if (screenX > gamePanel.mouseHandler.getMousePosX()) {
+        else if (cordX > gamePanel.mouseHandler.getMousePosX()) {
             angle = 180 + angle;
         }
-        else if (!(screenY > gamePanel.mouseHandler.getMousePosY())) {
+        else if (!(cordY > gamePanel.mouseHandler.getMousePosY())) {
             angle = 180 - angle;
         }
 
-        if (gamePanel.mouseHandler.getClicked() && weaponReloadTimer == 0) {
+        if (gamePanel.mouseHandler.getClicked("mouse1") && weaponReloadTimer == 0) {
             weaponMoving = true;
             weaponReloadTimer = attributeManager.attackCooldown;
             parryTime = attributeManager.getAttackCooldown();
@@ -202,6 +235,28 @@ public class Player extends Entity{
         weapon.setScreenY((int) (screenY - distance * Math.sin(Math.toRadians(angle + 90))));
     }
 
+    public PlayerData getData() {
+        PlayerData playerData = new PlayerData();
+        playerData.setWorldX(worldX);
+        playerData.setWorldY(worldY);
+        playerData.setRoomIndexX(roomIndexX);
+        playerData.setRoomIndexY(roomIndexY);
+        playerData.setAttributeManager(attributeManager);
+        playerData.setDefaultAttributes(defaultAttributes);
+        return playerData;
+    }
+
+    public void loadData(PlayerData playerData) {
+        worldX = playerData.getWorldX();
+        worldY = playerData.getWorldY();
+
+        roomIndexX = playerData.getRoomIndexX();
+        roomIndexY = playerData.getRoomIndexY();
+
+        attributeManager = playerData.getAttributeManager();
+        defaultAttributes = playerData.getDefaultAttributes();
+    }
+
     void dealDamage(int direction) {
         Iterator<Enemy> iterator = gamePanel.enemyManager.enemies.iterator();
         while (iterator.hasNext()) {
@@ -225,17 +280,60 @@ public class Player extends Entity{
 
 
                 if (Math.abs(angle - direction) < attributeManager.getAttackRange()) {
+                    gamePanel.soundManager.playSound(0);
                     item.attributeManager.dealDamage(attributeManager.getOutputDamage());
                     item.pushAway(worldX, worldY, 15, 5);
                 }
                 else if (direction < angle && direction + (360 - angle) < attributeManager.getAttackRange()) {
+                    gamePanel.soundManager.playSound(0);
                     item.attributeManager.dealDamage(attributeManager.getOutputDamage());
                     item.pushAway(worldX, worldY, 15, 5);
                 }
                 else if (direction > angle && angle + (360 - direction) < attributeManager.getAttackRange()) {
+                    gamePanel.soundManager.playSound(0);
                     item.attributeManager.dealDamage(attributeManager.getOutputDamage());
                     item.pushAway(worldX, worldY, 15, 5);
                 }
+            }
+        }
+    }
+
+    void updateAttributeManager() {
+//        if (attributeManager.inputDamage > 0) {
+//            System.out.println("inputDamage: " + attributeManager.inputDamage);
+//            System.out.println("fact inputDamage: " + (int)((double)(attributeManager.inputDamage) *
+//                    attributeManager.inputDamageMultiple));
+//        }
+
+        attributeManager.update();
+        int health = attributeManager.getHealth();
+        int regenerationTime = attributeManager.getRegenerationTime();
+        int immortalTime = attributeManager.getImmortalTime();
+
+        attributeManager = new AttributeManager(defaultAttributes);
+        attributeManager.setHealth(health, false);
+        attributeManager.setRegenerationTime(regenerationTime);
+        attributeManager.setImmortalTime(immortalTime);
+
+
+        Iterator<AttributeModifier> iterator = attributeModifiers.iterator();
+        while (iterator.hasNext()) {
+            AttributeModifier item = iterator.next();
+
+            if (item.isPermanent()) {
+                defaultAttributes.marge(item);
+
+                iterator.remove();
+            }
+            else if (item.isInfinity()) {
+                attributeManager.marge(item);
+            }
+            else if (item.getDuration() > 0) {
+                attributeManager.marge(item);
+                item.setDuration(item.getDuration() - 1);
+            }
+            else {
+                iterator.remove();
             }
         }
     }
@@ -245,7 +343,10 @@ public class Player extends Entity{
     public void update() {
         updateCameraRubberBand();
 
-        attributeManager.update();
+        updateAttributeManager();
+
+        animationManager.update();
+
 
         hitBox.update();
 
@@ -300,25 +401,25 @@ public class Player extends Entity{
                 keyHandler.getPressedButtonsQueue().contains("D") ||
                 keyHandler.getPressedButtonsQueue().contains("S")) {
             if (keyHandler.getPressedButtonsQueue().contains("W")){
-                direction = "up";
+                animationManager.setCurrentAnimation("playerUp");
                 motionY -= attributeManager.speed;
                 complementValueY = -1;
                 verticalMotion = true;
             }
             if (keyHandler.getPressedButtonsQueue().contains("S")){
-                direction = "down";
+                animationManager.setCurrentAnimation("playerDown");
                 motionY += attributeManager.speed;
                 complementValueY = 1;
                 verticalMotion = true;
             }
             if (keyHandler.getPressedButtonsQueue().contains("D")){
-                direction = "right";
+                animationManager.setCurrentAnimation("playerRight");
                 motionX += attributeManager.speed;
                 complementValueX = 1;
                 horizontalMotion = true;
             }
             if (keyHandler.getPressedButtonsQueue().contains("A")){
-                direction = "left";
+                animationManager.setCurrentAnimation("playerLeft");
                 motionX -= attributeManager.speed;
                 complementValueX = -1;
                 horizontalMotion = true;
@@ -365,6 +466,9 @@ public class Player extends Entity{
                 spriteCounter = 0;
             }
         }
+        else {
+            animationManager.setCurrentAnimation("playerIdle");
+        }
     }
 
     void checkingMovementBetweenRooms() {
@@ -372,66 +476,33 @@ public class Player extends Entity{
             worldX += (gamePanel.maxWorldCol * gamePanel.tileSize) / 3;
             roomIndexX -= 1;
             gamePanel.updateTileMap();
+            gamePanel.itemManager.itemsOnTheFloor = new ArrayList<>();
         }
         if (worldX > ((gamePanel.maxWorldCol * gamePanel.tileSize) / 3) * 2 - 1) {
             worldX -= (gamePanel.maxWorldCol * gamePanel.tileSize) / 3;
             roomIndexX += 1;
             gamePanel.updateTileMap();
+            gamePanel.itemManager.itemsOnTheFloor = new ArrayList<>();
         }
 
         if (worldY < (gamePanel.maxWorldRow * gamePanel.tileSize) / 3 - 1 * gamePanel.tileSize) {
             worldY += (gamePanel.maxWorldRow * gamePanel.tileSize) / 3;
             roomIndexY -= 1;
             gamePanel.updateTileMap();
+            gamePanel.itemManager.itemsOnTheFloor = new ArrayList<>();
         }
         if (worldY > ((gamePanel.maxWorldRow * gamePanel.tileSize) / 3) * 2 - 1) {
             worldY -= (gamePanel.maxWorldRow * gamePanel.tileSize) / 3;
             roomIndexY += 1;
             gamePanel.updateTileMap();
+            gamePanel.itemManager.itemsOnTheFloor = new ArrayList<>();
         }
     }
 
 
     public void draw(Graphics2D g2) {
-
-        BufferedImage image = null;
-
-        switch (direction) {
-            case "up":
-                if (spriteNum == 1){
-                    image = up1;
-                }
-                else if (spriteNum == 2) {
-                    image = up2;
-                }
-                break;
-            case "down":
-                if (spriteNum == 1){
-                    image = down1;
-                }
-                else if (spriteNum == 2) {
-                    image = down2;
-                }
-                break;
-            case "left":
-                if (spriteNum == 1){
-                    image = left1;
-                }
-                else if (spriteNum == 2) {
-                    image = left2;
-                }
-                break;
-            case "right":
-                if (spriteNum == 1){
-                    image = right1;
-                }
-                else if (spriteNum == 2) {
-                    image = right2;
-                }
-                break;
-        }
-
-        g2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+        g2.drawImage(animationManager.getCurrentImage(), screenX, screenY, gamePanel.tileSize,
+                gamePanel.tileSize, null);
     }
 
     public void move(int directedX, int directedY, boolean ignoreCollision, int complementMultiplier, int speed) {
@@ -505,25 +576,21 @@ public class Player extends Entity{
                 keyHandler.getPressedButtonsQueue().contains("D") ||
                 keyHandler.getPressedButtonsQueue().contains("S")) {
             if (keyHandler.getPressedButtonsQueue().contains("W")) {
-                direction = "up";
                 motionY -= speed;
                 complementValueY = -1;
                 verticalMotion = true;
             }
             if (keyHandler.getPressedButtonsQueue().contains("S")) {
-                direction = "down";
                 motionY += speed;
                 complementValueY = 1;
                 verticalMotion = true;
             }
             if (keyHandler.getPressedButtonsQueue().contains("D")) {
-                direction = "right";
                 motionX += speed;
                 complementValueX = 1;
                 horizontalMotion = true;
             }
             if (keyHandler.getPressedButtonsQueue().contains("A")) {
-                direction = "left";
                 motionX -= speed;
                 complementValueX = -1;
                 horizontalMotion = true;

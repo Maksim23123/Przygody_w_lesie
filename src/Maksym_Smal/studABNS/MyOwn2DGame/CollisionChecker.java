@@ -16,8 +16,8 @@ public class CollisionChecker {
 
     public boolean testStackInWall(Projectile projectile) {
         boolean result = true;
-        int row = projectile.getWorldX() / gamePanel.tileSize;
-        int col = projectile.getWorldY() / gamePanel.tileSize;
+        int row = (projectile.getWorldX() + gamePanel.tileSize / 2) / gamePanel.tileSize;
+        int col = (projectile.getWorldY() + gamePanel.tileSize / 2) / gamePanel.tileSize;
         TileManager tileManager = gamePanel.tileManager;
 
         if ((row >= 0 && col >= 0) && (col < gamePanel.maxWorldCol && row < gamePanel.maxWorldRow) &&

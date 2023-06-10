@@ -37,10 +37,10 @@ public class TileManager {
         mapTileNumber[30][44] = 1;
         mapTileNumber[30][43] = 1;
 
-        mapTileNumber[60][46] = 1;
-        mapTileNumber[60][45] = 1;
-        mapTileNumber[60][44] = 1;
-        mapTileNumber[60][43] = 1;
+        mapTileNumber[59][46] = 1;
+        mapTileNumber[59][45] = 1;
+        mapTileNumber[59][44] = 1;
+        mapTileNumber[59][43] = 1;
 
         mapTileNumber[46][30] = 1;
         mapTileNumber[45][30] = 1;
@@ -59,10 +59,10 @@ public class TileManager {
         mapTileNumber[30][44] = 0;
         mapTileNumber[30][43] = 0;
 
-        mapTileNumber[60][46] = 0;
-        mapTileNumber[60][45] = 0;
-        mapTileNumber[60][44] = 0;
-        mapTileNumber[60][43] = 0;
+        mapTileNumber[59][46] = 0;
+        mapTileNumber[59][45] = 0;
+        mapTileNumber[59][44] = 0;
+        mapTileNumber[59][43] = 0;
 
         mapTileNumber[46][30] = 0;
         mapTileNumber[45][30] = 0;

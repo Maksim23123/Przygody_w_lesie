@@ -2,23 +2,58 @@ package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.Random;
 
-public class AttributeManager {
+import java.io.Serializable;
 
-    public int speed;
+public class AttributeManager implements Serializable {
 
-    public int attackCooldown = 1;
-    private int attackFarRange;
-    private int attackRange;
+    protected int speed;
 
-    public int damage = 1;
-    public float damageMultiple = 1;
-    private int inputDamage;
-    float inputDamageMultiple = 1;
+    protected int attackCooldown = 1;
+    protected int attackFarRange;
+    protected int attackRange;
 
-    private int health = 1;
-    private int maxHealth = 1;
-    private int healthRegeneration = 1;
-    public boolean healthIsRegenerating = false;
+    protected int damage = 1;
+    protected float damageMultiple = 1;
+    protected int inputDamage;
+    protected double inputDamageMultiple = 1;
+
+    protected int health = 1;
+    protected int maxHealth = 1;
+    protected int healthRegeneration = 1;
+    protected boolean healthIsRegenerating = false;
+
+    private int regenerationTime = 120;
+
+    private int immortalTime = 0;
+
+    private int startImmortalTime = 4;
+
+    public AttributeManager() {}
+
+
+
+
+    public AttributeManager(AttributeManager attributeManager) {
+        setSpeed(attributeManager.getSpeed());
+
+        setAttackCooldown(attributeManager.getAttackCooldown());
+        setAttackFarRange(attributeManager.getAttackFarRange());
+        setAttackRange(attributeManager.getAttackRange());
+
+        setDamage(attributeManager.getDamage());
+        setDamageMultiple(attributeManager.getDamageMultiple());
+
+        setInputDamage(attributeManager.getInputDamage());
+        setInputDamageMultiple(attributeManager.getInputDamageMultiple());
+
+        setMaxHealth(attributeManager.getMaxHealth());
+        setHealth(attributeManager.getHealth(), true);
+
+        setHealthRegeneration(attributeManager.getHealthRegeneration());
+        setHealthIsRegenerating(attributeManager.getHealthIsRegenerating());
+        regenerationTime = attributeManager.getRegenerationTime();
+        startImmortalTime = attributeManager.getStartImmortalTime();
+    }
 
     public String showAttributes() {
         return "attackCooldown: " + attackCooldown + "\n" +
@@ -37,9 +72,23 @@ public class AttributeManager {
 
     void update() {
 
-        health -= inputDamage * inputDamageMultiple;
-        inputDamage = 0;
+        if (inputDamage > 0 && !(immortalTime > 0)) {
+            health -= (int)((double)(inputDamage) * inputDamageMultiple);
+            immortalTime = startImmortalTime;
+            inputDamage = 0;
+        }
+        else if (healthIsRegenerating && regenerationTime <= 0) {
+            health += healthRegeneration;
+            regenerationTime = 120;
+        }
+        else if (healthIsRegenerating) {
+            regenerationTime--;
+        }
 
+        if (immortalTime > 0) {
+            inputDamage = 0;
+            immortalTime--;
+        }
     }
 
     void setRandomAttributes(int level) {
@@ -53,7 +102,7 @@ public class AttributeManager {
         setHealth(maxHealth, false);
 
         setAttackRange(30);
-        setAttackFarRange(48 * (2 + Random.getRandomInt(3, false)));
+        setAttackFarRange(48 * 3);
     }
 
     public void setMaxHealth(int maxHealth) {
@@ -98,7 +147,7 @@ public class AttributeManager {
         }
     }
 
-    void setHealth(int health, boolean ignoreLimits) {
+    public void setHealth(int health, boolean ignoreLimits) {
         if (health > maxHealth) {
             if (ignoreLimits) {
                 this.health = health;
@@ -143,5 +192,105 @@ public class AttributeManager {
 
     public int getMaxHealth() {
         return maxHealth;
+    }
+
+    public void marge(AttributeManager attributeManager) {
+        setSpeed(getSpeed() + attributeManager.getSpeed());
+
+        setAttackCooldown(getAttackCooldown() + attributeManager.getAttackCooldown());
+        setAttackFarRange(getAttackFarRange() + attributeManager.getAttackFarRange());
+        setAttackRange(getAttackRange() + attributeManager.getAttackRange());
+
+        setDamage(getDamage() + attributeManager.getDamage());
+        setDamageMultiple(getDamageMultiple() + attributeManager.getDamageMultiple());
+
+        setInputDamage(getInputDamage() + attributeManager.getInputDamage());
+        setInputDamageMultiple(getInputDamageMultiple() + attributeManager.getInputDamageMultiple());
+
+        setHealth(getHealth() + attributeManager.getHealth(), false);
+
+        setMaxHealth(getMaxHealth() + attributeManager.getMaxHealth());
+        setHealthRegeneration(getHealthRegeneration() + attributeManager.getHealthRegeneration());
+
+        if (attributeManager.getHealthIsRegenerating()) {
+            setHealthIsRegenerating(true);
+        }
+    }
+
+    public void setHealthRegeneration(int healthRegeneration) {
+        this.healthRegeneration = healthRegeneration;
+    }
+
+    public void setRegenerationTime(int regenerationTime) {
+        this.regenerationTime = regenerationTime;
+    }
+
+    public void setHealthIsRegenerating(boolean healthIsRegenerating) {
+        this.healthIsRegenerating = healthIsRegenerating;
+    }
+
+    public boolean getHealthIsRegenerating() {
+        return healthIsRegenerating;
+    }
+
+    public int getHealthRegeneration() {
+        return healthRegeneration;
+    }
+
+    public void setInputDamageMultiple(double inputDamageMultiple) {
+        if (inputDamageMultiple > 0.001d) {
+            this.inputDamageMultiple = inputDamageMultiple;
+        }
+        else {
+            this.inputDamageMultiple = 0.001d;
+        }
+    }
+
+    public double getInputDamageMultiple() {
+        return inputDamageMultiple;
+    }
+
+    public void setInputDamage(int inputDamage) {
+        this.inputDamage = inputDamage;
+    }
+
+    public int getInputDamage() {
+        return inputDamage;
+    }
+
+    public float getDamageMultiple() {
+        return damageMultiple;
+    }
+
+    public void setDamageMultiple(float damageMultiple) {
+        this.damageMultiple = damageMultiple;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getRegenerationTime() {
+        return regenerationTime;
+    }
+
+    public int getImmortalTime() {
+        return immortalTime;
+    }
+
+    public void setImmortalTime(int immortalTime) {
+        this.immortalTime = immortalTime;
+    }
+
+    public int getStartImmortalTime() {
+        return startImmortalTime;
+    }
+
+    public void setStartImmortalTime(int startImmortalTime) {
+        this.startImmortalTime = startImmortalTime;
     }
 }

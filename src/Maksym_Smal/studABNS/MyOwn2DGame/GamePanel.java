@@ -1,11 +1,17 @@
 package Maksym_Smal.studABNS.MyOwn2DGame;
 
+import Maksym_Smal.studABNS.MyOwn2DGame.control.KeyHandler;
+import Maksym_Smal.studABNS.MyOwn2DGame.control.MouseHandler;
 import Maksym_Smal.studABNS.MyOwn2DGame.entity.EnemyManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.entity.Player;
 import Maksym_Smal.studABNS.MyOwn2DGame.fileManager.FileManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.graphics.ImageManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.items.ItemManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.menu.GamePauseMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.MainMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.Menu;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.SavesMenu;
+import Maksym_Smal.studABNS.MyOwn2DGame.sound.SoundManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.tile.TileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.ProjectileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.VisualOutputManager;
@@ -31,6 +37,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     private int menuNumber = 0;
 
+    private JFrame window;
+
 
     //FPS
     int FPS = 60;
@@ -47,6 +55,7 @@ public class GamePanel extends JPanel implements Runnable {
     DeltaTime deltaTime = new DeltaTime(FPS);
 
     public ImageManager imageManager = new ImageManager();
+
     public Player player = new Player(this, keyHandler);
     TileManager tileManager = new TileManager(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
@@ -65,13 +74,21 @@ public class GamePanel extends JPanel implements Runnable {
 
     public ProjectileManager projectileManager = new ProjectileManager(this);
 
-    public GamePanel() {
+    public ItemManager itemManager = new ItemManager(this);
+
+    public SoundManager soundManager = new SoundManager();
+
+    private int changeGameStateReload = 0;
+
+    public GamePanel(JFrame window) {
+        this.window = window;
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
 
         menus.add(new MainMenu(this));
         menus.add(new SavesMenu(this));
+        menus.add(new GamePauseMenu(this));
 
         this.addKeyListener(keyHandler);
         this.addMouseListener(mouseHandler);
@@ -105,10 +122,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 
         while (gameThread != null) {
-
             if (deltaTime.getIntervalProgress() >= 1) {
-//                System.out.println(deltaTime.getCurrentInterval());
-//                System.out.println(enemyManager.getEnemies().size());
                 switch (gameState) {
                     case "menu":
                         menus.get(menuNumber).update();
@@ -117,12 +131,17 @@ public class GamePanel extends JPanel implements Runnable {
 
                         break;
                     case "gameLoop":
+//
+//                        System.out.println( "----\n" + player.attributeManager.getHealth());
+                        if (player.attributeManager.getHealth() < 1) {
+                            gameState = "menu";
+                            menuNumber = 0;
+                            soundManager.setPlayBackground(false);
+                            enemyManager.setEnemies(new ArrayList<>());
+                        }
 
-//                        if (!enemyManager.getEnemies().isEmpty()) {
-//                            System.out.println( "----\n" + enemyManager.getEnemies().
-//                                    get(0).attributeManager.showAttributes());
-//                        }
-
+//
+//                        System.out.println("ExploredRoomsCount:" + roomHandler.getExploredRoomsCount());
 
                         // 1 UPDATE: update information such as character positions
                         update();
@@ -132,16 +151,30 @@ public class GamePanel extends JPanel implements Runnable {
 
                         break;
                 }
+
+                if (getChangeGameStateReload() > 0) {
+                    changeGameStateReload--;
+                }
             }
         }
     }
 
     public void update(){
-        screenHeight = getHeight();
-        screenWidth = getWidth();
+        if (gameState.equals("gameLoop") && keyHandler.getPressedButtonsQueue().contains("Escape") &&
+                !(getChangeGameStateReload() > 0)) {
+            gameState = "menu";
+            setMenuNumber(2);
+            keyHandler.setPressedButtonsQueue(new ArrayList<>());
+            soundManager.setPlayBackground(false);
+        }
+
+//        screenHeight = getHeight();
+//        screenWidth = getWidth();
         enemyManager.update();
         player.update();
         projectileManager.update();
+        itemManager.update();
+        soundManager.update();
 
         if (!enemyManager.getEnemies().isEmpty()) {
             tileManager.closeRoom();
@@ -162,7 +195,7 @@ public class GamePanel extends JPanel implements Runnable {
                 break;
             case "gameLoop":
                 tileManager.draw(g2);
-//                goblin.draw(g2);
+                itemManager.draw(g2);
                 enemyManager.draw(g2);
                 player.draw(g2);
                 projectileManager.draw(g2);
@@ -172,5 +205,25 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         g2.dispose();
+    }
+
+    public String getGameState() {
+        return gameState;
+    }
+
+    public int getMenuNumber() {
+        return menuNumber;
+    }
+
+    public KeyHandler getKeyHandler() {
+        return keyHandler;
+    }
+
+    public int getChangeGameStateReload() {
+        return changeGameStateReload;
+    }
+
+    public void setChangeGameStateReload(int changeGameStateReload) {
+        this.changeGameStateReload = changeGameStateReload;
     }
 }

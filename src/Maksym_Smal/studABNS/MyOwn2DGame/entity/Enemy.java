@@ -1,6 +1,7 @@
 package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
+import Maksym_Smal.studABNS.MyOwn2DGame.items.LootTable;
 
 import java.awt.*;
 
@@ -19,10 +20,25 @@ public abstract class Enemy extends Entity{
     private boolean updated = false;
     private boolean drowned = false;
 
+    protected LootTable lootTable;
+
     public Enemy(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
 
         setDefaultValues();
+
+        defineLootTable();
+    }
+
+
+    private void defineLootTable() {
+        lootTable = new LootTable(1, 15,gamePanel);
+
+        lootTable.addItem("heart", 5);
+    }
+
+    public LootTable getLootTable() {
+        return lootTable;
     }
 
     public void setPosition(int cordX, int cordY) {

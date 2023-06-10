@@ -32,6 +32,8 @@ public abstract class Entity {
 
     public AttributeManager attributeManager = new AttributeManager();
 
+    public AttributeManager defaultAttributes = new AttributeManager();
+
     public void setPushAwaySpeed(int pushAwaySpeed) {
         if (pushAwaySpeed <= 0) {
             this.pushAwaySpeed = 1;
