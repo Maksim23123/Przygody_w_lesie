@@ -84,8 +84,12 @@ public class VisualOutputManager {
 
             g2d.dispose();
 
+            g2.drawImage(gamePanel.imageManager.getImageByTag("grayHeart"),
+                    gamePanel.tileSize * health + distanceBetween * health + 10,
+                    10,gamePanel.tileSize, gamePanel.tileSize, null);
             g2.drawImage(copiedImage, gamePanel.tileSize * health + distanceBetween * health + 10,
                     10,gamePanel.tileSize, gamePanel.tileSize, null);
+
         }
     }
 }

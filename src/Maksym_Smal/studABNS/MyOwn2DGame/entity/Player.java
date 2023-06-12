@@ -2,18 +2,18 @@ package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 import Maksym_Smal.studABNS.MyOwn2DGame.control.KeyHandler;
+import Maksym_Smal.studABNS.MyOwn2DGame.fileManager.FileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.fileManager.PlayerData;
 import Maksym_Smal.studABNS.MyOwn2DGame.graphics.Animation;
 import Maksym_Smal.studABNS.MyOwn2DGame.graphics.AnimationManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.menu.EndGameMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.Weapon;
+import Maksym_Smal.studABNS.MyOwn2DGame.world.MazeGenerator;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
 
 public class Player extends Entity{
     KeyHandler keyHandler;
@@ -99,13 +99,17 @@ public class Player extends Entity{
 
         animationManager.setCurrentAnimation("playerDown");
 
-        animation = new Animation("playerLeft", 12, gamePanel);
+        animation = new Animation("playerLeft", 8, gamePanel);
         animation.addImage("playerLeft1");
+        animation.addImage("playerLeft2");
+        animation.addImage("playerLeft3");
         animation.addImage("playerLeft2");
         animationManager.addAnimation(animation);
 
-        animation = new Animation("playerRight", 12, gamePanel);
+        animation = new Animation("playerRight", 8, gamePanel);
         animation.addImage("playerRight1");
+        animation.addImage("playerRight2");
+        animation.addImage("playerRight3");
         animation.addImage("playerRight2");
         animationManager.addAnimation(animation);
 
@@ -160,12 +164,6 @@ public class Player extends Entity{
     private void updateWeapon() {
 
         int distance = 50;
-
-
-
-
-//        System.out.println("1: " + mouseCordX);
-////        System.out.println("2: " + mouseCordY);
 
         int cordX = screenX + gamePanel.tileSize / 2;
         int cordY = screenY + gamePanel.tileSize / 2;
@@ -299,11 +297,6 @@ public class Player extends Entity{
     }
 
     void updateAttributeManager() {
-//        if (attributeManager.inputDamage > 0) {
-//            System.out.println("inputDamage: " + attributeManager.inputDamage);
-//            System.out.println("fact inputDamage: " + (int)((double)(attributeManager.inputDamage) *
-//                    attributeManager.inputDamageMultiple));
-//        }
 
         attributeManager.update();
         int health = attributeManager.getHealth();
@@ -383,6 +376,28 @@ public class Player extends Entity{
 
         setStackInWall(false);
         updateWeapon();
+
+
+        if (attributeManager.getHealth() < 1) {
+            gamePanel.setGameState("menu");
+            gamePanel.setMenuNumber(3);
+            EndGameMenu endGameMenu = (EndGameMenu) gamePanel.menus.get(3);
+
+            endGameMenu.setText("YOU LOSE\n" +
+                    "Explored rooms count: " + (gamePanel.roomHandler.getExploredRoomsCount() - 1) + "/" +
+                    MazeGenerator.getShapesCount(gamePanel.fileManager.getMazeMap()) + "\n" +
+                    "Improved statistic\n" +
+                    "Damage: " + gamePanel.player.attributeManager.getDamage() + "\n" +
+                    "Health: " + gamePanel.player.attributeManager.getHealth() + "/" +
+                    gamePanel.player.attributeManager.getMaxHealth()+ "\n" +
+                    "Input damage multiple: " +
+                    gamePanel.player.defaultAttributes.getInputDamageMultiple());
+            FileManager.deleteFolder(new File(gamePanel.fileManager.getFilePath()));
+            gamePanel.soundManager.setPlayBackground(false);
+            gamePanel.enemyManager.setEnemies(new ArrayList<>());
+            gamePanel.itemManager.itemsOnTheFloor = new ArrayList<>();
+            gamePanel.projectileManager.setProjectiles(new ArrayList<>());
+        }
     }
 
     void controlledMotion() {

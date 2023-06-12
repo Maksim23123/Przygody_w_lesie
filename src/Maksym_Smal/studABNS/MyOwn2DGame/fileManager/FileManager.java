@@ -261,4 +261,8 @@ public class FileManager {
 
         folder.delete();
     }
+
+    public String getFilePath() {
+        return filePath;
+    }
 }

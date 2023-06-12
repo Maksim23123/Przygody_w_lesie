@@ -23,6 +23,16 @@ public class MazeGenerator {
     }
 
     public int[][] generate(int iterations) {
+//        int map[][] = {{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1, 1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1, 1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+//                {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}};
         map[(int)(map.length / 2)][(int)(map[0].length / 2)] = 10;
         shapesCount = 0;
 
@@ -137,4 +147,15 @@ public class MazeGenerator {
         return output + "ShapesCount: " + shapesCount;
     }
 
+    public static int getShapesCount(int maze[][]) {
+        int output = 0;
+        for (int i[] : maze) {
+            for (int j : i) {
+                if (j != -1) {
+                    output++;
+                }
+            }
+        }
+        return output;
+    }
 }

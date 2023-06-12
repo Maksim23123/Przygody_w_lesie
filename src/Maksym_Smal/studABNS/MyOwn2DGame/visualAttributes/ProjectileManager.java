@@ -27,26 +27,6 @@ public class ProjectileManager {
 
 
     public void update() {
-//        Iterator<Projectile> iterator = projectiles.iterator();
-//        boolean updateComplete = false;
-//        while (iterator.hasNext()) {
-//            Projectile item = iterator.next();
-//            if (!item.getUpdated()) {
-//                item.update();
-//                updateComplete = true;
-//                break;
-//            }
-//        }
-//        if (!updateComplete) {
-//            iterator = projectiles.iterator();
-//            while (iterator.hasNext()) {
-//                Projectile item = iterator.next();
-//                item.setUpdated(false);
-//            }
-//            if (!projectiles.isEmpty()) {
-//                update();
-//            }
-//        }
 
         if (projectiles.size() > 50) {
             clearOldProjectiles(50);
@@ -85,5 +65,9 @@ public class ProjectileManager {
                 item.draw(g2);
             }
         }
+    }
+
+    public void setProjectiles(ArrayList<Projectile> projectiles) {
+        this.projectiles = projectiles;
     }
 }

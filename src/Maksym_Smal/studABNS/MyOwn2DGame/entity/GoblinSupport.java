@@ -2,6 +2,8 @@ package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 import Maksym_Smal.studABNS.MyOwn2DGame.Random;
+import Maksym_Smal.studABNS.MyOwn2DGame.graphics.Animation;
+import Maksym_Smal.studABNS.MyOwn2DGame.graphics.AnimationManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.Weapon;
 
 import java.awt.*;
@@ -13,6 +15,8 @@ public class GoblinSupport extends Enemy {
 
     int confusionTime;
 
+    private AnimationManager animationManager = new AnimationManager();
+
     public GoblinSupport(GamePanel gamePanel, int lvl) {
         super(gamePanel);
 
@@ -21,6 +25,8 @@ public class GoblinSupport extends Enemy {
         attributeManager.setRandomAttributes(lvl);
 
         setDefaultValues();
+
+        getGoblinImage();
     }
 
     @Override
@@ -29,7 +35,6 @@ public class GoblinSupport extends Enemy {
         hitBox = new HitBox(gamePanel, this);
         setPosition(45  * gamePanel.tileSize, 45  * gamePanel.tileSize);
         direction = "down";
-        weapon = new Weapon(gamePanel , gamePanel.imageManager.getImageByTag("staff"));
 
 
         attributeManager.setAttackCooldown(30 + 30 * Random.getRandomInt(4, true) +
@@ -94,7 +99,7 @@ public class GoblinSupport extends Enemy {
         screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
-        g2.drawImage(gamePanel.imageManager.getImageByTag("regularGoblinUp1"), screenX, screenY,
+        g2.drawImage(animationManager.getCurrentImage(), screenX, screenY,
                 gamePanel.tileSize, gamePanel.tileSize, null);
 
         weapon.draw(g2);
@@ -162,6 +167,18 @@ public class GoblinSupport extends Enemy {
 
         weapon.setScreenX((int) (screenX - distance * Math.cos(Math.toRadians(angle + 90))));
         weapon.setScreenY((int) (screenY - distance * Math.sin(Math.toRadians(angle + 90))));
+    }
+
+    public void getGoblinImage() {
+
+        Animation animation = new Animation("goblinDown", 12, gamePanel);
+        animation.addImage("goblinDown1");
+        animation.addImage("goblinDown2");
+        animationManager.addAnimation(animation);
+
+        animationManager.setCurrentAnimation("goblinDown");
+
+        weapon = new Weapon(gamePanel , gamePanel.imageManager.getImageByTag("staff"));
     }
 
 }

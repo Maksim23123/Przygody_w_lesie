@@ -2,7 +2,8 @@ package Maksym_Smal.studABNS.MyOwn2DGame.entity;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
 import Maksym_Smal.studABNS.MyOwn2DGame.Random;
-import Maksym_Smal.studABNS.MyOwn2DGame.items.LootTable;
+import Maksym_Smal.studABNS.MyOwn2DGame.graphics.Animation;
+import Maksym_Smal.studABNS.MyOwn2DGame.graphics.AnimationManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.Weapon;
 
 import java.awt.*;
@@ -18,7 +19,7 @@ public class Goblin extends Enemy {
     int weaponIncreaseValue = 45;
     int weaponReloadTimer = 0;
 
-
+    private AnimationManager animationManager = new AnimationManager();
 
     public Goblin(GamePanel gamePanel, int lvl) {
         super(gamePanel);
@@ -28,6 +29,7 @@ public class Goblin extends Enemy {
         attributeManager.setRandomAttributes(lvl);
 
         setDefaultValues();
+        getGoblinImage();
     }
 
 
@@ -43,8 +45,6 @@ public class Goblin extends Enemy {
         hitBox = new HitBox(gamePanel, this);
         setPosition(45  * gamePanel.tileSize, 45  * gamePanel.tileSize);
         direction = "down";
-        weapon = new Weapon(gamePanel , gamePanel.imageManager.getImageByTag("sword"));
-
     }
 
     @Override
@@ -54,6 +54,7 @@ public class Goblin extends Enemy {
 
         hitBox.update();
         attributeManager.update();
+        animationManager.update();
 
         if (gamePanel.collisionChecker.testMotion(this, 0, 0)) {
             pushedOut = false;
@@ -81,6 +82,7 @@ public class Goblin extends Enemy {
         if (confusionTime > 0) {
             confusionTime--;
         }
+
         setStackInWall(false);
         updateWeapon();
     }
@@ -91,7 +93,7 @@ public class Goblin extends Enemy {
         screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
-        g2.drawImage(gamePanel.imageManager.getImageByTag("regularGoblinUp1"), screenX, screenY,
+        g2.drawImage(animationManager.getCurrentImage(), screenX, screenY,
                 gamePanel.tileSize, gamePanel.tileSize, null);
 
         weapon.draw(g2);
@@ -172,5 +174,17 @@ public class Goblin extends Enemy {
 
         weapon.setScreenX((int) (screenX - distance * Math.cos(Math.toRadians(angle + 90))));
         weapon.setScreenY((int) (screenY - distance * Math.sin(Math.toRadians(angle + 90))));
+    }
+
+    public void getGoblinImage() {
+
+        Animation animation = new Animation("goblinDown", 12, gamePanel);
+        animation.addImage("goblinDown1");
+        animation.addImage("goblinDown2");
+        animationManager.addAnimation(animation);
+
+        animationManager.setCurrentAnimation("goblinDown");
+
+        weapon = new Weapon(gamePanel ,gamePanel.imageManager.getImageByTag("wood"));
     }
 }

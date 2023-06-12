@@ -1,17 +1,20 @@
 package Maksym_Smal.studABNS.MyOwn2DGame.menu;
 
 import Maksym_Smal.studABNS.MyOwn2DGame.GamePanel;
+import Maksym_Smal.studABNS.MyOwn2DGame.world.MazeGenerator;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.util.Objects;
 
-public class MainMenu extends Menu{
+public class EndGameMenu extends Menu{
 
-    Button playButton;
 
     Button quitButton;
 
-    public MainMenu(GamePanel gamePanel) {
+    String text;
+
+    public EndGameMenu(GamePanel gamePanel) {
         super(gamePanel);
 
         defineButtons();
@@ -19,13 +22,6 @@ public class MainMenu extends Menu{
 
     void defineButtons(){
         try {
-            playButton = new Button(144, 72, ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/gui/play_button_dont_active.png"))));
-            playButton.addImage(ImageIO.read(Objects.requireNonNull(getClass().
-                    getResourceAsStream("/gui/play_button_active.png"))));
-            playButton.setPosX(gamePanel.screenWidth / 2 - playButton.size.width / 2);
-            playButton.setPosY((int)(gamePanel.screenHeight / 1.7) - playButton.size.height / 2);
-            buttons.add(playButton);
 
             quitButton = new Button(144, 72, ImageIO.read(Objects.requireNonNull(getClass().
                     getResourceAsStream("/gui/quit_button_dont_active.png"))));
@@ -44,24 +40,37 @@ public class MainMenu extends Menu{
     @Override
     public void update() {
 
-        if (checkHover(playButton)) {
-            playButton.setState(1);
-            if(gamePanel.mouseHandler.getClicked("mouse1")) {
-                gamePanel.setMenuNumber(1);
-            }
-        }
-        else {
-            playButton.setState(0);
-        }
-
         if (checkHover(quitButton)) {
             quitButton.setState(1);
             if(gamePanel.mouseHandler.getClicked("mouse1")) {
-                System.exit(0);
+                gamePanel.setMenuNumber(0);
             }
         }
         else {
             quitButton.setState(0);
         }
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    @Override
+    public void draw(Graphics2D g2) {
+//        text = gamePanel.player.attributeManager.showAttributes();
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.BOLD, 40));
+
+        int outputHeight = gamePanel.screenHeight / 3;
+
+        String[] outputLines = text.split("\n");
+
+        for (String outputLine : outputLines) {
+            g2.drawString( outputLine, gamePanel.screenWidth / 3, outputHeight);
+            outputHeight += 45;
+        }
+
+
+        super.draw(g2);
     }
 }

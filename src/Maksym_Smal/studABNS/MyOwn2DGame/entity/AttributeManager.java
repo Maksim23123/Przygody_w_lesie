@@ -22,7 +22,7 @@ public class AttributeManager implements Serializable {
     protected int healthRegeneration = 1;
     protected boolean healthIsRegenerating = false;
 
-    private int regenerationTime = 120;
+    private int regenerationTime = 60;
 
     private int immortalTime = 0;
 
@@ -79,7 +79,7 @@ public class AttributeManager implements Serializable {
         }
         else if (healthIsRegenerating && regenerationTime <= 0) {
             health += healthRegeneration;
-            regenerationTime = 120;
+            regenerationTime = 60;
         }
         else if (healthIsRegenerating) {
             regenerationTime--;
@@ -238,11 +238,11 @@ public class AttributeManager implements Serializable {
     }
 
     public void setInputDamageMultiple(double inputDamageMultiple) {
-        if (inputDamageMultiple > 0.001d) {
+        if (inputDamageMultiple > 0.1d) {
             this.inputDamageMultiple = inputDamageMultiple;
         }
         else {
-            this.inputDamageMultiple = 0.001d;
+            this.inputDamageMultiple = 0.1d;
         }
     }
 

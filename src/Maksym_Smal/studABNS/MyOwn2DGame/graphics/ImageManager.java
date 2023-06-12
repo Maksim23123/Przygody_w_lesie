@@ -37,12 +37,10 @@ public class ImageManager {
         loadImage("/gui/health_bar/healthbar.png","healthbar");
 
         loadImage("/weapon/sword.png","sword");
-
         loadImage("/weapon/bow.png","bow");
-
         loadImage("/weapon/projectiles/arrow.png","arrow");
-
         loadImage("/weapon/staff.png","staff");
+        loadImage("/weapon/wood.png","wood");
 
         loadImage("/gui/gray_boxes/minimap/type_0.png","type0");
         loadImage("/gui/gray_boxes/minimap/type_1.png","type1");
@@ -89,20 +87,25 @@ public class ImageManager {
 
         loadImage("/entityes/chest.png","chest");
 
-        loadImage("/player/boy_up_1.png","playerUp1");
-        loadImage("/player/boy_up_2.png","playerUp2");
+        loadImage("/player/walk_up_1.png","playerUp1");
+        loadImage("/player/walk_up_2.png","playerUp2");
 
         loadImage("/player/walk_down_1.png","playerDown1");
         loadImage("/player/walk_down_2.png","playerDown2");
 
-        loadImage("/player/boy_left_1.png","playerLeft1");
-        loadImage("/player/boy_left_2.png","playerLeft2");
+        loadImage("/player/walk_left_1.png","playerLeft1");
+        loadImage("/player/walk_left_2.png","playerLeft2");
+        loadImage("/player/walk_left_3.png","playerLeft3");
 
-        loadImage("/player/boy_right_1.png","playerRight1");
-        loadImage("/player/boy_right_2.png","playerRight2");
+        loadImage("/player/walk_right_1.png","playerRight1");
+        loadImage("/player/walk_right_2.png","playerRight2");
+        loadImage("/player/walk_right_3.png","playerRight3");
 
         loadImage("/player/idle_step_1.png","playerIdle1");
         loadImage("/player/idle_step_2.png","playerIdle2");
+
+        loadImage("/entityes/goblin/goblin_walk_down_1.png","goblinDown1");
+        loadImage("/entityes/goblin/goblin_walk_down_2.png","goblinDown2");
     }
 
     public void loadImage(String path, String tag) {

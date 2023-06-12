@@ -7,18 +7,18 @@ import Maksym_Smal.studABNS.MyOwn2DGame.entity.Player;
 import Maksym_Smal.studABNS.MyOwn2DGame.fileManager.FileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.graphics.ImageManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.items.ItemManager;
-import Maksym_Smal.studABNS.MyOwn2DGame.menu.GamePauseMenu;
-import Maksym_Smal.studABNS.MyOwn2DGame.menu.MainMenu;
+import Maksym_Smal.studABNS.MyOwn2DGame.menu.*;
 import Maksym_Smal.studABNS.MyOwn2DGame.menu.Menu;
-import Maksym_Smal.studABNS.MyOwn2DGame.menu.SavesMenu;
 import Maksym_Smal.studABNS.MyOwn2DGame.sound.SoundManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.tile.TileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.ProjectileManager;
 import Maksym_Smal.studABNS.MyOwn2DGame.visualAttributes.VisualOutputManager;
+import Maksym_Smal.studABNS.MyOwn2DGame.world.MazeGenerator;
 import Maksym_Smal.studABNS.MyOwn2DGame.world.RoomHandler;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -60,7 +60,7 @@ public class GamePanel extends JPanel implements Runnable {
     TileManager tileManager = new TileManager(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
 
-    ArrayList<Menu> menus = new ArrayList<>();
+    public ArrayList<Menu> menus = new ArrayList<>();
 
     public MouseHandler mouseHandler = new MouseHandler();
 
@@ -89,6 +89,7 @@ public class GamePanel extends JPanel implements Runnable {
         menus.add(new MainMenu(this));
         menus.add(new SavesMenu(this));
         menus.add(new GamePauseMenu(this));
+        menus.add(new EndGameMenu(this));
 
         this.addKeyListener(keyHandler);
         this.addMouseListener(mouseHandler);
@@ -131,14 +132,31 @@ public class GamePanel extends JPanel implements Runnable {
 
                         break;
                     case "gameLoop":
-//
-//                        System.out.println( "----\n" + player.attributeManager.getHealth());
-                        if (player.attributeManager.getHealth() < 1) {
-                            gameState = "menu";
-                            menuNumber = 0;
+
+                        if (roomHandler.getExploredRoomsCount() >=
+                                MazeGenerator.getShapesCount(fileManager.getMazeMap()) &&
+                                enemyManager.getEnemies().isEmpty()) {
+                            setGameState("menu");
+                            EndGameMenu endGameMenu = (EndGameMenu) menus.get(3);
+
+                            endGameMenu.setText("YOU WIN\n" +
+                                    "Explored rooms count: " + roomHandler.getExploredRoomsCount() + "/" +
+                                    MazeGenerator.getShapesCount(fileManager.getMazeMap()) + "\n" +
+                                    "Improved statistic\n" +
+                                    "Damage: " + player.attributeManager.getDamage() + "\n" +
+                                    "Health: " + player.attributeManager.getHealth() + "/" +
+                                    player.attributeManager.getMaxHealth()+ "\n" +
+                                    "Input damage multiple: " +
+                                    player.defaultAttributes.getInputDamageMultiple());
+                            setMenuNumber(3);
+                            FileManager.deleteFolder(new File(fileManager.getFilePath()));
                             soundManager.setPlayBackground(false);
                             enemyManager.setEnemies(new ArrayList<>());
+                            itemManager.itemsOnTheFloor = new ArrayList<>();
+                            projectileManager.setProjectiles(new ArrayList<>());
                         }
+//
+//                        System.out.println( "----\n" + player.attributeManager.getHealth());
 
 //
 //                        System.out.println("ExploredRoomsCount:" + roomHandler.getExploredRoomsCount());

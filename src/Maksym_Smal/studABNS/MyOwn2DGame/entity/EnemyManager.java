@@ -67,7 +67,7 @@ public class EnemyManager {
             enemies.add(enemy);
         }
 
-        for (int i = 0; i < enemiesCount / 10; i++) {
+        for (int i = 0; i < enemiesCount / 5; i++) {
             int cordX = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
             int cordY = (Random.getRandomInt(20, false) + 35) * gamePanel.tileSize;
 
